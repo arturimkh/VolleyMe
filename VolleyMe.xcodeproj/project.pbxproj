@@ -9,21 +9,59 @@
 /* Begin PBXBuildFile section */
 		182CCAF12EFEFBD800C451D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCAF02EFEFBD800C451D5 /* AppDelegate.swift */; };
 		182CCAF32EFEFBD800C451D5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCAF22EFEFBD800C451D5 /* SceneDelegate.swift */; };
-		182CCAF52EFEFBD800C451D5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCAF42EFEFBD800C451D5 /* ViewController.swift */; };
-		182CCAF82EFEFBD800C451D5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 182CCAF62EFEFBD800C451D5 /* Main.storyboard */; };
 		182CCAFA2EFEFBD900C451D5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 182CCAF92EFEFBD900C451D5 /* Assets.xcassets */; };
 		182CCAFD2EFEFBD900C451D5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 182CCAFB2EFEFBD900C451D5 /* LaunchScreen.storyboard */; };
+		182CCB042EFEFBD900C451D5 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB032EFEFBD900C451D5 /* Coordinator.swift */; };
+		182CCB052EFEFBD900C451D5 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB062EFEFBD900C451D5 /* AppCoordinator.swift */; };
+		182CCB0F2EFEFBD900C451D5 /* ViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB102EFEFBD900C451D5 /* ViewProtocol.swift */; };
+		182CCB112EFEFBD900C451D5 /* PresenterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB122EFEFBD900C451D5 /* PresenterProtocol.swift */; };
+		182CCB132EFEFBD900C451D5 /* ViewModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB142EFEFBD900C451D5 /* ViewModelFactoryProtocol.swift */; };
+		182CCB152EFEFBD900C451D5 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB162EFEFBD900C451D5 /* ViewModel.swift */; };
+		182CCB172EFEFBD900C451D5 /* AssemblyProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB182EFEFBD900C451D5 /* AssemblyProtocol.swift */; };
+		182CCB242EFEFBD900C451D5 /* RequestProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB252EFEFBD900C451D5 /* RequestProcessor.swift */; };
+		182CCB262EFEFBD900C451D5 /* MainFlowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB272EFEFBD900C451D5 /* MainFlowController.swift */; };
+		182CCB282EFEFBD900C451D5 /* EventDetailsAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB292EFEFBD900C451D5 /* EventDetailsAssembly.swift */; };
+		182CCB2A2EFEFBD900C451D5 /* EventDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB2B2EFEFBD900C451D5 /* EventDetailsModel.swift */; };
+		182CCB2C2EFEFBD900C451D5 /* EventDetailsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB2D2EFEFBD900C451D5 /* EventDetailsService.swift */; };
+		182CCB2E2EFEFBD900C451D5 /* EventDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB2F2EFEFBD900C451D5 /* EventDetailsPresenter.swift */; };
+		182CCB302EFEFBD900C451D5 /* EventDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB312EFEFBD900C451D5 /* EventDetailsViewModelFactory.swift */; };
+		182CCB322EFEFBD900C451D5 /* EventDetailsViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB332EFEFBD900C451D5 /* EventDetailsViewModels.swift */; };
+		182CCB342EFEFBD900C451D5 /* EventDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB352EFEFBD900C451D5 /* EventDetailsViewController.swift */; };
+		182CCB362EFEFBD900C451D5 /* EventInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB372EFEFBD900C451D5 /* EventInfoCell.swift */; };
+		182CCB382EFEFBD900C451D5 /* ParticipantCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB392EFEFBD900C451D5 /* ParticipantCell.swift */; };
+		182CCB3A2EFEFBD900C451D5 /* EventDetailsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB3B2EFEFBD900C451D5 /* EventDetailsHeaderView.swift */; };
+		182CCB3C2EFEFBD900C451D5 /* ParticipantsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB3D2EFEFBD900C451D5 /* ParticipantsSectionView.swift */; };
+		182CCB3E2EFEFBD900C451D5 /* CustomAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB3F2EFEFBD900C451D5 /* CustomAlertViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		182CCAED2EFEFBD800C451D5 /* VolleyMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VolleyMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		182CCAF02EFEFBD800C451D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		182CCAF22EFEFBD800C451D5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		182CCAF42EFEFBD800C451D5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		182CCAF72EFEFBD800C451D5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		182CCAF92EFEFBD900C451D5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		182CCAFC2EFEFBD900C451D5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		182CCAFE2EFEFBD900C451D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		182CCB032EFEFBD900C451D5 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
+		182CCB062EFEFBD900C451D5 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		182CCB102EFEFBD900C451D5 /* ViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProtocol.swift; sourceTree = "<group>"; };
+		182CCB122EFEFBD900C451D5 /* PresenterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresenterProtocol.swift; sourceTree = "<group>"; };
+		182CCB142EFEFBD900C451D5 /* ViewModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelFactoryProtocol.swift; sourceTree = "<group>"; };
+		182CCB162EFEFBD900C451D5 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		182CCB182EFEFBD900C451D5 /* AssemblyProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssemblyProtocol.swift; sourceTree = "<group>"; };
+		182CCB252EFEFBD900C451D5 /* RequestProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessor.swift; sourceTree = "<group>"; };
+		182CCB272EFEFBD900C451D5 /* MainFlowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFlowController.swift; sourceTree = "<group>"; };
+		182CCB292EFEFBD900C451D5 /* EventDetailsAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsAssembly.swift; sourceTree = "<group>"; };
+		182CCB2B2EFEFBD900C451D5 /* EventDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsModel.swift; sourceTree = "<group>"; };
+		182CCB2D2EFEFBD900C451D5 /* EventDetailsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsService.swift; sourceTree = "<group>"; };
+		182CCB2F2EFEFBD900C451D5 /* EventDetailsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsPresenter.swift; sourceTree = "<group>"; };
+		182CCB312EFEFBD900C451D5 /* EventDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsViewModelFactory.swift; sourceTree = "<group>"; };
+		182CCB332EFEFBD900C451D5 /* EventDetailsViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsViewModels.swift; sourceTree = "<group>"; };
+		182CCB352EFEFBD900C451D5 /* EventDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsViewController.swift; sourceTree = "<group>"; };
+		182CCB372EFEFBD900C451D5 /* EventInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventInfoCell.swift; sourceTree = "<group>"; };
+		182CCB392EFEFBD900C451D5 /* ParticipantCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantCell.swift; sourceTree = "<group>"; };
+		182CCB3B2EFEFBD900C451D5 /* EventDetailsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsHeaderView.swift; sourceTree = "<group>"; };
+		182CCB3D2EFEFBD900C451D5 /* ParticipantsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsSectionView.swift; sourceTree = "<group>"; };
+		182CCB3F2EFEFBD900C451D5 /* CustomAlertViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,15 +94,194 @@
 		182CCAEF2EFEFBD800C451D5 /* VolleyMe */ = {
 			isa = PBXGroup;
 			children = (
+				182CCB402EFEFBD900C451D5 /* App */,
+				182CCB192EFEFBD900C451D5 /* Core */,
+				182CCB1A2EFEFBD900C451D5 /* Presentation */,
 				182CCAF02EFEFBD800C451D5 /* AppDelegate.swift */,
 				182CCAF22EFEFBD800C451D5 /* SceneDelegate.swift */,
-				182CCAF42EFEFBD800C451D5 /* ViewController.swift */,
-				182CCAF62EFEFBD800C451D5 /* Main.storyboard */,
 				182CCAF92EFEFBD900C451D5 /* Assets.xcassets */,
 				182CCAFB2EFEFBD900C451D5 /* LaunchScreen.storyboard */,
 				182CCAFE2EFEFBD900C451D5 /* Info.plist */,
 			);
 			path = VolleyMe;
+			sourceTree = "<group>";
+		};
+		182CCB192EFEFBD900C451D5 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB1B2EFEFBD900C451D5 /* Coordinator */,
+				182CCB412EFEFBD900C451D5 /* Network */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		182CCB1A2EFEFBD900C451D5 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB1E2EFEFBD900C451D5 /* MVP */,
+				182CCB1F2EFEFBD900C451D5 /* Assembly */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		182CCB1B2EFEFBD900C451D5 /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB032EFEFBD900C451D5 /* Coordinator.swift */,
+				182CCB062EFEFBD900C451D5 /* AppCoordinator.swift */,
+			);
+			path = Coordinator;
+			sourceTree = "<group>";
+		};
+		182CCB1E2EFEFBD900C451D5 /* MVP */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB202EFEFBD900C451D5 /* View */,
+				182CCB212EFEFBD900C451D5 /* Presenter */,
+				182CCB222EFEFBD900C451D5 /* Model */,
+			);
+			path = MVP;
+			sourceTree = "<group>";
+		};
+		182CCB1F2EFEFBD900C451D5 /* Assembly */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB182EFEFBD900C451D5 /* AssemblyProtocol.swift */,
+			);
+			path = Assembly;
+			sourceTree = "<group>";
+		};
+		182CCB202EFEFBD900C451D5 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB102EFEFBD900C451D5 /* ViewProtocol.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		182CCB212EFEFBD900C451D5 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB122EFEFBD900C451D5 /* PresenterProtocol.swift */,
+				182CCB142EFEFBD900C451D5 /* ViewModelFactoryProtocol.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		182CCB222EFEFBD900C451D5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB162EFEFBD900C451D5 /* ViewModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		182CCB402EFEFBD900C451D5 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB422EFEFBD900C451D5 /* MainFlowController */,
+				182CCB432EFEFBD900C451D5 /* EventDetailsScreen */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		182CCB412EFEFBD900C451D5 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB252EFEFBD900C451D5 /* RequestProcessor.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		182CCB422EFEFBD900C451D5 /* MainFlowController */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB272EFEFBD900C451D5 /* MainFlowController.swift */,
+			);
+			path = MainFlowController;
+			sourceTree = "<group>";
+		};
+		182CCB432EFEFBD900C451D5 /* EventDetailsScreen */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB292EFEFBD900C451D5 /* EventDetailsAssembly.swift */,
+				182CCB442EFEFBD900C451D5 /* Model */,
+				182CCB452EFEFBD900C451D5 /* Service */,
+				182CCB462EFEFBD900C451D5 /* Presenter */,
+				182CCB472EFEFBD900C451D5 /* ViewModelFactory */,
+				182CCB482EFEFBD900C451D5 /* View */,
+			);
+			path = EventDetailsScreen;
+			sourceTree = "<group>";
+		};
+		182CCB442EFEFBD900C451D5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB2B2EFEFBD900C451D5 /* EventDetailsModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		182CCB452EFEFBD900C451D5 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB2D2EFEFBD900C451D5 /* EventDetailsService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		182CCB462EFEFBD900C451D5 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB2F2EFEFBD900C451D5 /* EventDetailsPresenter.swift */,
+			);
+			path = Presenter;
+			sourceTree = "<group>";
+		};
+		182CCB472EFEFBD900C451D5 /* ViewModelFactory */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB312EFEFBD900C451D5 /* EventDetailsViewModelFactory.swift */,
+				182CCB492EFEFBD900C451D5 /* ViewModels */,
+			);
+			path = ViewModelFactory;
+			sourceTree = "<group>";
+		};
+		182CCB482EFEFBD900C451D5 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB352EFEFBD900C451D5 /* EventDetailsViewController.swift */,
+				182CCB4A2EFEFBD900C451D5 /* Cells */,
+				182CCB4B2EFEFBD900C451D5 /* Components */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		182CCB492EFEFBD900C451D5 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB332EFEFBD900C451D5 /* EventDetailsViewModels.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		182CCB4A2EFEFBD900C451D5 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB372EFEFBD900C451D5 /* EventInfoCell.swift */,
+				182CCB392EFEFBD900C451D5 /* ParticipantCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		182CCB4B2EFEFBD900C451D5 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				182CCB3B2EFEFBD900C451D5 /* EventDetailsHeaderView.swift */,
+				182CCB3D2EFEFBD900C451D5 /* ParticipantsSectionView.swift */,
+				182CCB3F2EFEFBD900C451D5 /* CustomAlertViewController.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,7 +344,6 @@
 			files = (
 				182CCAFD2EFEFBD900C451D5 /* LaunchScreen.storyboard in Resources */,
 				182CCAFA2EFEFBD900C451D5 /* Assets.xcassets in Resources */,
-				182CCAF82EFEFBD800C451D5 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,23 +354,35 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				182CCAF52EFEFBD800C451D5 /* ViewController.swift in Sources */,
 				182CCAF12EFEFBD800C451D5 /* AppDelegate.swift in Sources */,
 				182CCAF32EFEFBD800C451D5 /* SceneDelegate.swift in Sources */,
+				182CCB042EFEFBD900C451D5 /* Coordinator.swift in Sources */,
+				182CCB052EFEFBD900C451D5 /* AppCoordinator.swift in Sources */,
+				182CCB0F2EFEFBD900C451D5 /* ViewProtocol.swift in Sources */,
+				182CCB112EFEFBD900C451D5 /* PresenterProtocol.swift in Sources */,
+				182CCB132EFEFBD900C451D5 /* ViewModelFactoryProtocol.swift in Sources */,
+				182CCB152EFEFBD900C451D5 /* ViewModel.swift in Sources */,
+				182CCB172EFEFBD900C451D5 /* AssemblyProtocol.swift in Sources */,
+				182CCB242EFEFBD900C451D5 /* RequestProcessor.swift in Sources */,
+				182CCB262EFEFBD900C451D5 /* MainFlowController.swift in Sources */,
+				182CCB282EFEFBD900C451D5 /* EventDetailsAssembly.swift in Sources */,
+				182CCB2A2EFEFBD900C451D5 /* EventDetailsModel.swift in Sources */,
+				182CCB2C2EFEFBD900C451D5 /* EventDetailsService.swift in Sources */,
+				182CCB2E2EFEFBD900C451D5 /* EventDetailsPresenter.swift in Sources */,
+				182CCB302EFEFBD900C451D5 /* EventDetailsViewModelFactory.swift in Sources */,
+				182CCB322EFEFBD900C451D5 /* EventDetailsViewModels.swift in Sources */,
+				182CCB342EFEFBD900C451D5 /* EventDetailsViewController.swift in Sources */,
+				182CCB362EFEFBD900C451D5 /* EventInfoCell.swift in Sources */,
+				182CCB382EFEFBD900C451D5 /* ParticipantCell.swift in Sources */,
+				182CCB3A2EFEFBD900C451D5 /* EventDetailsHeaderView.swift in Sources */,
+				182CCB3C2EFEFBD900C451D5 /* ParticipantsSectionView.swift in Sources */,
+				182CCB3E2EFEFBD900C451D5 /* CustomAlertViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		182CCAF62EFEFBD800C451D5 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				182CCAF72EFEFBD800C451D5 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		182CCAFB2EFEFBD900C451D5 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -297,7 +525,6 @@
 				INFOPLIST_FILE = VolleyMe/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -313,7 +540,7 @@
 			};
 			name = Debug;
 		};
-		182CCB032EFEFBD900C451D5 /* Release */ = {
+		182CCB232EFEFBD900C451D5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -325,7 +552,6 @@
 				INFOPLIST_FILE = VolleyMe/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -357,7 +583,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				182CCB022EFEFBD900C451D5 /* Debug */,
-				182CCB032EFEFBD900C451D5 /* Release */,
+				182CCB232EFEFBD900C451D5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
