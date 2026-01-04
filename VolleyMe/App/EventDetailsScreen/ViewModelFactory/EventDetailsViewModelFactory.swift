@@ -25,7 +25,7 @@ final class EventDetailsViewModelFactory: IEventDetailsViewModelFactory {
     
     private enum Constants {
         static let descriptionPreviewLength = 100
-        static let currentUserSuffix = "(это вы)"
+        static let currentUserSuffix = ""
     }
     
     // MARK: - IEventDetailsViewModelFactory
@@ -35,7 +35,7 @@ final class EventDetailsViewModelFactory: IEventDetailsViewModelFactory {
         isDescriptionExpanded: Bool,
         isLoading: Bool
     ) -> EventDetailsViewModel {
-        return EventDetailsViewModel(
+        EventDetailsViewModel(
             title: event.title,
             roleBadge: createRoleBadge(for: event.userRole),
             infoItems: createInfoItems(from: event),
@@ -301,4 +301,5 @@ final class EventDetailsViewModelFactory: IEventDetailsViewModelFactory {
         )
     }
 }
+
 

@@ -12,6 +12,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     var appCoordinator: AppCoordinator?
     
+    // DI Container - создаём один раз на старте приложения
+    private lazy var dependencyContainer: IDependencyContainer = DependencyContainer()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -20,12 +22,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
-        // Инициализация AppCoordinator
-        let coordinator = AppCoordinator(window: window)
+        // Инициализация AppCoordinator с DependencyContainer
+        let coordinator = AppCoordinator(
+            window: window,
+            dependencyContainer: dependencyContainer
+        )
         self.appCoordinator = coordinator
         
         // Запуск координатора
         coordinator.start()
     }
 }
-

@@ -16,28 +16,21 @@ final class AppCoordinator {
     private var mainFlowController: MainFlowController?
     
     // DI
-    private let requestProcessor: IRequestProcessor
+    private let dependencyContainer: IDependencyContainer
     
     // MARK: - Initialization
     
-    init(window: UIWindow, requestProcessor: IRequestProcessor = MockRequestProcessor()) {
+    init(window: UIWindow, dependencyContainer: IDependencyContainer) {
         self.window = window
-        self.requestProcessor = requestProcessor
-        
-        // Настраиваем мок для демонстрации разных состояний
-        if let mockProcessor = requestProcessor as? MockRequestProcessor {
-            // Меняй userRole для тестирования разных состояний:
-            // .viewer - просто смотрит (кнопка "Присоединиться")
-            // .participant - участник (кнопка "Покинуть встречу")
-            // .host - организатор (кнопки "Отменить встречу" и "Ссылка-приглашение")
-            mockProcessor.userRole = .participant
-        }
+        self.dependencyContainer = dependencyContainer
     }
     
     // MARK: - Public Methods
     
     func start() {
-        let eventDetailsAssembly = EventDetailsAssembly(requestProcessor: requestProcessor)
+        let eventDetailsAssembly = EventDetailsAssembly(
+            requestProcessor: dependencyContainer.requestProcessor
+        )
         let mainFlow = MainFlowController(eventDetailsAssembly: eventDetailsAssembly)
         
         self.mainFlowController = mainFlow
