@@ -49,3 +49,4 @@ final class EventDetailsAssembly: IEventDetailsAssembly {
 }
 
 
+

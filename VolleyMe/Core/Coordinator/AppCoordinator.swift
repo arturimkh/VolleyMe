@@ -28,14 +28,127 @@ final class AppCoordinator {
     // MARK: - Public Methods
     
     func start() {
+        let splash = SplashViewController()
+        splash.onFinished = { [weak self] in
+            self?.handlePostSplash()
+        }
+        
+        window.rootViewController = splash
+        window.makeKeyAndVisible()
+    }
+    
+    // MARK: - Private Methods
+    
+    private var hasSeenOnboarding: Bool {
+        UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
+    }
+    
+    private func setOnboardingSeen() {
+        UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+    }
+    
+    private func handlePostSplash() {
+        if !hasSeenOnboarding {
+            showOnboarding()
+        } else if !dependencyContainer.tokenStorage.isAuthorized {
+            showAuth()
+        } else {
+            showMainFlow()
+        }
+    }
+    
+    private func showOnboarding() {
+        let assembly = OnboardingAssembly()
+        let onboarding = assembly.assemble(output: self)
+        
+        transition(to: onboarding)
+    }
+    
+    private func showAuth() {
+        let assembly = AuthAssembly(
+            requestProcessor: dependencyContainer.requestProcessor,
+            tokenStorage: dependencyContainer.tokenStorage
+        )
+        let auth = assembly.assemble(output: self)
+        
+        transition(to: auth)
+    }
+    
+    private func transition(to viewController: UIViewController) {
+        UIView.transition(
+            with: window,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: {
+                self.window.rootViewController = viewController
+            }
+        )
+    }
+    
+    private func showMainFlow() {
+        let homeAssembly = HomeAssembly(
+            requestProcessor: dependencyContainer.requestProcessor,
+            tokenStorage: dependencyContainer.tokenStorage
+        )
         let eventDetailsAssembly = EventDetailsAssembly(
             requestProcessor: dependencyContainer.requestProcessor
         )
-        let mainFlow = MainFlowController(eventDetailsAssembly: eventDetailsAssembly)
+        let newEventAssembly = NewEventAssembly(
+            requestProcessor: dependencyContainer.requestProcessor
+        )
+        let mainFlow = MainFlowController(
+            homeAssembly: homeAssembly,
+            eventDetailsAssembly: eventDetailsAssembly,
+            newEventAssembly: newEventAssembly
+        )
+        mainFlow.onLogout = { [weak self] in
+            self?.showAuth()
+        }
         
         self.mainFlowController = mainFlow
         
-        window.rootViewController = mainFlow
-        window.makeKeyAndVisible()
+        transition(to: mainFlow)
+    }
+}
+
+// MARK: - IOnboardingOutput
+
+extension AppCoordinator: IOnboardingOutput {
+    func onboardingDidFinish() {
+        setOnboardingSeen()
+        showAuth()
+    }
+}
+
+// MARK: - IAuthOutput
+
+extension AppCoordinator: IAuthOutput {
+    func authDidFinish() {
+        showMainFlow()
+    }
+    
+    func authDidTapRegister() {
+        guard let authVC = window.rootViewController else { return }
+        
+        let assembly = RegisterAssembly(
+            requestProcessor: dependencyContainer.requestProcessor,
+            tokenStorage: dependencyContainer.tokenStorage
+        )
+        let registerVC = assembly.assemble(output: self)
+        registerVC.modalPresentationStyle = .fullScreen
+        authVC.present(registerVC, animated: true)
+    }
+}
+
+// MARK: - IRegisterOutput
+
+extension AppCoordinator: IRegisterOutput {
+    func registerDidFinish() {
+        window.rootViewController?.dismiss(animated: false)
+        showMainFlow()
+    }
+    
+    func registerDidTapClose() {
+        window.rootViewController?.dismiss(animated: true)
     }
 }

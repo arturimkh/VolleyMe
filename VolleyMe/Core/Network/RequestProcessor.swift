@@ -145,6 +145,7 @@ final class MockRequestProcessor: IRequestProcessor {
     var userRole: UserRole = .viewer
     var shouldFail: Bool = false
     var isEventFull: Bool = false
+    var hasEvents: Bool = true
     
     enum UserRole {
         case viewer
@@ -169,6 +170,12 @@ final class MockRequestProcessor: IRequestProcessor {
             throw NetworkError.serverError(500)
         }
         
+        if endpoint == "/events" {
+            let mockData = createMockEventList()
+            let data = try JSONEncoder().encode(mockData)
+            return try decoder.decode(T.self, from: data)
+        }
+        
         if endpoint.contains("/event/") {
             let mockData = createMockEventDetails()
             let data = try JSONEncoder().encode(mockData)
@@ -179,10 +186,19 @@ final class MockRequestProcessor: IRequestProcessor {
     }
     
     func post<T: Decodable>(_ endpoint: String, body: Data?) async throws -> T {
-        try await Task.sleep(nanoseconds: 300_000_000) // 0.3 сек
+        try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 сек
         
         if shouldFail {
             throw NetworkError.serverError(500)
+        }
+        
+        if endpoint == "/auth/login" || endpoint == "/auth/register" {
+            let response = [
+                "accessToken": "mock_access_token_\(UUID().uuidString)",
+                "refreshToken": "mock_refresh_token_\(UUID().uuidString)"
+            ]
+            let data = try JSONEncoder().encode(response)
+            return try JSONDecoder().decode(T.self, from: data)
         }
         
         throw NetworkError.noData
@@ -198,9 +214,130 @@ final class MockRequestProcessor: IRequestProcessor {
         if isEventFull && endpoint.contains("/join/") {
             throw NetworkError.serverError(409) // Conflict - все места заняты
         }
+        
+        // Для создания события - просто успешно завершаем
+        if endpoint == "/events" {
+            return
+        }
     }
     
     // MARK: - Mock Data
+    
+    private func createMockEventList() -> EventListResponse {
+        guard hasEvents else {
+            return EventListResponse(items: [])
+        }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        let today = calendar.startOfDay(for: now)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        
+        func dateString(_ day: Date, hour: Int, minute: Int = 0) -> String {
+            let date = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: day)!
+            return formatter.string(from: date)
+        }
+        
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
+        let later1 = calendar.date(byAdding: .day, value: 4, to: today)!
+        let later2 = calendar.date(byAdding: .day, value: 6, to: today)!
+        let later3 = calendar.date(byAdding: .day, value: 8, to: today)!
+        let later4 = calendar.date(byAdding: .day, value: 10, to: today)!
+        
+        return EventListResponse(items: [
+            EventListItemResponse(
+                id: "1",
+                dateTime: dateString(today, hour: 18),
+                subtitle: "Большая дружеская встреча по волейболу на снегу",
+                price: "650",
+                address: "ул. Победы, 33",
+                participantCount: 12,
+                type: "admin"
+            ),
+            EventListItemResponse(
+                id: "2",
+                dateTime: dateString(tomorrow, hour: 12),
+                subtitle: "Тренировка в зале",
+                price: "0",
+                address: "ул. Центральная, 5",
+                participantCount: 4,
+                type: "participant"
+            ),
+            EventListItemResponse(
+                id: "3",
+                dateTime: dateString(later1, hour: 12),
+                subtitle: "Командная встреча",
+                price: "650",
+                address: "ул. Победы, 33",
+                participantCount: 12,
+                type: "admin"
+            ),
+            EventListItemResponse(
+                id: "4",
+                dateTime: dateString(later2, hour: 15),
+                subtitle: "Тренировка в зале",
+                price: "0",
+                address: "ул. Центральная, 5",
+                participantCount: 12,
+                type: "admin"
+            ),
+            EventListItemResponse(
+                id: "5",
+                dateTime: dateString(later3, hour: 15),
+                subtitle: "Тренировка в зале",
+                price: "0",
+                address: "ул. Центральная, 5",
+                participantCount: 2,
+                type: "participant"
+            ),
+            EventListItemResponse(
+                id: "6",
+                dateTime: dateString(later4, hour: 18),
+                subtitle: "Вечерняя игра",
+                price: "0",
+                address: "ул. Спортивная, 10",
+                participantCount: 8,
+                type: "participant"
+            ),
+            EventListItemResponse(
+                id: "7",
+                dateTime: dateString(today, hour: 20),
+                subtitle: "Открытая тренировка для новичков",
+                price: "0",
+                address: "ул. Ленина, 15",
+                participantCount: 6,
+                type: "nobody"
+            ),
+            EventListItemResponse(
+                id: "8",
+                dateTime: dateString(tomorrow, hour: 18),
+                subtitle: "Турнир 4x4",
+                price: "500",
+                address: "ул. Спортивная, 22",
+                participantCount: 16,
+                type: "nobody"
+            ),
+            EventListItemResponse(
+                id: "9",
+                dateTime: dateString(later2, hour: 12),
+                subtitle: "Пляжный волейбол",
+                price: "0",
+                address: "пляж Городской, 1",
+                participantCount: 8,
+                type: "nobody"
+            ),
+            EventListItemResponse(
+                id: "10",
+                dateTime: dateString(later3, hour: 19),
+                subtitle: "Дружеская встреча",
+                price: "300",
+                address: "ул. Мира, 45",
+                participantCount: 10,
+                type: "nobody"
+            )
+        ])
+    }
     
     private func createMockEventDetails() -> EventDetailsResponse {
         let currentUserId = "current_user_id"
@@ -261,5 +398,6 @@ final class MockRequestProcessor: IRequestProcessor {
         )
     }
 }
+
 
 

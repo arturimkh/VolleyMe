@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class EventDetailsViewController: UIViewController {
     
@@ -25,7 +26,6 @@ final class EventDetailsViewController: UIViewController {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsVerticalScrollIndicator = true
         scrollView.alwaysBounceVertical = true
         return scrollView
@@ -35,25 +35,16 @@ final class EventDetailsViewController: UIViewController {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = Constants.sectionSpacing
-        stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
     
     private lazy var headerView: EventHeaderView = {
         let view = EventHeaderView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.onBackTapped = { [weak self] in
-            self?.presenter.didTapClose()
-        }
-        view.onMoreTapped = { [weak self] in
-            self?.presenter.didTapMoreOptions()
-        }
         return view
     }()
     
     private lazy var infoSectionView: EventInfoSectionView = {
         let view = EventInfoSectionView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.onCopyAddressTapped = { [weak self] in
             self?.presenter.didTapCopyAddress()
         }
@@ -62,7 +53,6 @@ final class EventDetailsViewController: UIViewController {
     
     private lazy var descriptionView: EventDescriptionView = {
         let view = EventDescriptionView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.onToggleTapped = { [weak self] in
             self?.presenter.didToggleDescription()
         }
@@ -71,19 +61,16 @@ final class EventDetailsViewController: UIViewController {
     
     private lazy var participantsSectionView: ParticipantsSectionView = {
         let view = ParticipantsSectionView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var hostsSectionView: ParticipantsSectionView = {
         let view = ParticipantsSectionView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var actionButtonView: EventActionButtonView = {
         let view = EventActionButtonView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.onPrimaryTapped = { [weak self] in
             self?.presenter.didTapPrimaryAction()
         }
@@ -96,7 +83,6 @@ final class EventDetailsViewController: UIViewController {
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.hidesWhenStopped = true
-        indicator.translatesAutoresizingMaskIntoConstraints = false
         return indicator
     }()
     
@@ -116,14 +102,20 @@ final class EventDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupNavigationBar()
         presenter.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Показываем navigationBar при появлении экрана
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     // MARK: - Setup
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
-        navigationController?.setNavigationBarHidden(true, animated: false)
         
         setupScrollView()
         setupContentStack()
@@ -131,22 +123,35 @@ final class EventDetailsViewController: UIViewController {
         setupLoadingIndicator()
     }
     
+    private func setupNavigationBar() {
+        // Заголовок будет в headerView, здесь только кнопки
+        title = ""
+        
+        // Кнопка "..." справа
+        let moreButton = UIBarButtonItem(
+            image: UIImage(systemName: "ellipsis"),
+            style: .plain,
+            target: self,
+            action: #selector(moreTapped)
+        )
+        moreButton.tintColor = .label
+        navigationItem.rightBarButtonItem = moreButton
+    }
+    
     private func setupScrollView() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentStackView)
         
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            contentStackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            contentStackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            contentStackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            contentStackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -Constants.scrollBottomInset),
-            contentStackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
-        ])
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        contentStackView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-Constants.scrollBottomInset)
+            make.width.equalTo(scrollView)
+        }
     }
     
     private func setupContentStack() {
@@ -160,20 +165,23 @@ final class EventDetailsViewController: UIViewController {
     private func setupActionButton() {
         view.addSubview(actionButtonView)
         
-        NSLayoutConstraint.activate([
-            actionButtonView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            actionButtonView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            actionButtonView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+        actionButtonView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
     }
     
     private func setupLoadingIndicator() {
         view.addSubview(loadingIndicator)
         
-        NSLayoutConstraint.activate([
-            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
+        loadingIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func moreTapped() {
+        presenter.didTapMoreOptions()
     }
 }
 

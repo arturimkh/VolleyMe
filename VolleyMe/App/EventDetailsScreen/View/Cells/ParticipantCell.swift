@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class ParticipantCell: UITableViewCell {
     
@@ -17,7 +18,6 @@ final class ParticipantCell: UITableViewCell {
         let view = UIView()
         view.backgroundColor = .systemGray5
         view.layer.cornerRadius = 20
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -26,7 +26,6 @@ final class ParticipantCell: UITableViewCell {
         label.font = .systemFont(ofSize: 16, weight: .medium)
         label.textColor = .systemGray
         label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -34,7 +33,6 @@ final class ParticipantCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16)
         label.textColor = .label
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -42,7 +40,6 @@ final class ParticipantCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
         label.textColor = .systemGray
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -68,24 +65,28 @@ final class ParticipantCell: UITableViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(currentUserLabel)
         
-        NSLayoutConstraint.activate([
-            avatarView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            avatarView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            avatarView.widthAnchor.constraint(equalToConstant: 40),
-            avatarView.heightAnchor.constraint(equalToConstant: 40),
-            avatarView.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 8),
-            avatarView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -8),
-            
-            avatarLabel.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
-            avatarLabel.centerYAnchor.constraint(equalTo: avatarView.centerYAnchor),
-            
-            nameLabel.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 12),
-            nameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            
-            currentUserLabel.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 8),
-            currentUserLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-            currentUserLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -16)
-        ])
+        avatarView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(40)
+            make.top.greaterThanOrEqualToSuperview().offset(8)
+            make.bottom.lessThanOrEqualToSuperview().offset(-8)
+        }
+        
+        avatarLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
+        nameLabel.snp.makeConstraints { make in
+            make.leading.equalTo(avatarView.snp.trailing).offset(12)
+            make.centerY.equalToSuperview()
+        }
+        
+        currentUserLabel.snp.makeConstraints { make in
+            make.leading.equalTo(nameLabel.snp.trailing).offset(8)
+            make.centerY.equalTo(nameLabel)
+            make.trailing.lessThanOrEqualToSuperview().offset(-16)
+        }
     }
     
     // MARK: - Configure
@@ -96,7 +97,6 @@ final class ParticipantCell: UITableViewCell {
         currentUserLabel.text = viewModel.currentUserSuffix
         currentUserLabel.isHidden = viewModel.currentUserSuffix == nil
         
-        // Делаем текущего пользователя немного серым
         if viewModel.isCurrentUser {
             nameLabel.textColor = .systemGray
         } else {
@@ -104,5 +104,3 @@ final class ParticipantCell: UITableViewCell {
         }
     }
 }
-
-

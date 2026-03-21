@@ -11,12 +11,22 @@ final class MainFlowController: UINavigationController {
     
     // MARK: - Properties
     
+    private let homeAssembly: IHomeAssembly
     private let eventDetailsAssembly: IEventDetailsAssembly
+    private let newEventAssembly: INewEventAssembly
+    
+    var onLogout: (() -> Void)?
     
     // MARK: - Init
     
-    init(eventDetailsAssembly: IEventDetailsAssembly) {
+    init(
+        homeAssembly: IHomeAssembly,
+        eventDetailsAssembly: IEventDetailsAssembly,
+        newEventAssembly: INewEventAssembly
+    ) {
+        self.homeAssembly = homeAssembly
         self.eventDetailsAssembly = eventDetailsAssembly
+        self.newEventAssembly = newEventAssembly
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -34,9 +44,38 @@ final class MainFlowController: UINavigationController {
     // MARK: - Private Methods
     
     private func setupRootViewController() {
-        // Показываем экран Event Details с тестовым eventId
-        let eventDetailsVC = eventDetailsAssembly.assemble(eventId: "test_event_123", output: self)
-        setViewControllers([eventDetailsVC], animated: false)
+        let homeVC = homeAssembly.assemble(output: self)
+        setViewControllers([homeVC], animated: false)
+    }
+    
+    private func showEventDetails(eventId: String) {
+        let eventDetailsVC = eventDetailsAssembly.assemble(eventId: eventId, output: self)
+        pushViewController(eventDetailsVC, animated: true)
+    }
+    
+    private func showCreateEvent() {
+        let newEventVC = newEventAssembly.assemble(output: self)
+        pushViewController(newEventVC, animated: true)
+    }
+}
+
+// MARK: - IHomeOutput
+
+extension MainFlowController: IHomeOutput {
+    func homeDidSelectEvent(eventId: String) {
+        showEventDetails(eventId: eventId)
+    }
+    
+    func homeDidTapCreateEvent() {
+        showCreateEvent()
+    }
+    
+    func homeDidTapFindEvents() {
+        // Handled by presenter (switches tab)
+    }
+    
+    func homeDidTapLogout() {
+        onLogout?()
     }
 }
 
@@ -44,14 +83,22 @@ final class MainFlowController: UINavigationController {
 
 extension MainFlowController: IEventDetailsOutput {
     func eventDetailsDidRequestClose() {
-        // В реальном приложении здесь будет переход назад
-        print("Close requested")
+        popViewController(animated: true)
     }
     
     func eventDetailsDidCancelEvent() {
-        // В реальном приложении здесь будет обработка отмены события
-        print("Event cancelled")
+        popViewController(animated: true)
     }
 }
 
+// MARK: - INewEventOutput
 
+extension MainFlowController: INewEventOutput {
+    func newEventDidFinish() {
+        popViewController(animated: true)
+    }
+    
+    func newEventDidCancel() {
+        popViewController(animated: true)
+    }
+}

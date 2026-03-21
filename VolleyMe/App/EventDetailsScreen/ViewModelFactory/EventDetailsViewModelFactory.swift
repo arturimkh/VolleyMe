@@ -303,3 +303,4 @@ final class EventDetailsViewModelFactory: IEventDetailsViewModelFactory {
 }
 
 
+

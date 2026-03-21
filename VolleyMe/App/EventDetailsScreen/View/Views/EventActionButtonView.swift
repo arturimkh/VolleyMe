@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class EventActionButtonView: UIView {
     
@@ -22,7 +23,6 @@ final class EventActionButtonView: UIView {
     private let topSeparator: UIView = {
         let view = UIView()
         view.backgroundColor = .systemGray5
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -30,7 +30,6 @@ final class EventActionButtonView: UIView {
         let button = UIButton(type: .system)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.layer.cornerRadius = Constants.buttonCornerRadius
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -38,16 +37,14 @@ final class EventActionButtonView: UIView {
         let button = UIButton(type: .system)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         button.layer.cornerRadius = Constants.buttonCornerRadius
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
         return button
     }()
     
-    private var secondaryButtonBottomConstraint: NSLayoutConstraint?
-    private var primaryButtonBottomConstraint: NSLayoutConstraint?
-    
     var onPrimaryTapped: (() -> Void)?
     var onSecondaryTapped: (() -> Void)?
+    
+    private var hasSecondaryButton = false
     
     // MARK: - Init
     
@@ -69,30 +66,56 @@ final class EventActionButtonView: UIView {
         addSubview(primaryButton)
         addSubview(secondaryButton)
         
-        primaryButtonBottomConstraint = primaryButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -8)
-        secondaryButtonBottomConstraint = secondaryButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -8)
+        topSeparator.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(1)
+        }
         
-        NSLayoutConstraint.activate([
-            topSeparator.topAnchor.constraint(equalTo: topAnchor),
-            topSeparator.leadingAnchor.constraint(equalTo: leadingAnchor),
-            topSeparator.trailingAnchor.constraint(equalTo: trailingAnchor),
-            topSeparator.heightAnchor.constraint(equalToConstant: 1),
-            
-            primaryButton.topAnchor.constraint(equalTo: topSeparator.bottomAnchor, constant: 8),
-            primaryButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding),
-            primaryButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalPadding),
-            primaryButton.heightAnchor.constraint(equalToConstant: Constants.buttonHeight),
-            
-            secondaryButton.topAnchor.constraint(equalTo: primaryButton.bottomAnchor, constant: 8),
-            secondaryButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding),
-            secondaryButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalPadding),
-            secondaryButton.heightAnchor.constraint(equalToConstant: Constants.buttonHeight)
-        ])
+        primaryButton.snp.makeConstraints { make in
+            make.top.equalTo(topSeparator.snp.bottom).offset(8)
+            make.leading.equalToSuperview().offset(Constants.horizontalPadding)
+            make.trailing.equalToSuperview().offset(-Constants.horizontalPadding)
+            make.height.equalTo(Constants.buttonHeight)
+        }
         
-        primaryButtonBottomConstraint?.isActive = true
+        secondaryButton.snp.makeConstraints { make in
+            make.top.equalTo(primaryButton.snp.bottom).offset(8)
+            make.leading.equalToSuperview().offset(Constants.horizontalPadding)
+            make.trailing.equalToSuperview().offset(-Constants.horizontalPadding)
+            make.height.equalTo(Constants.buttonHeight)
+        }
+        
+        updateBottomConstraint()
         
         primaryButton.addTarget(self, action: #selector(primaryTapped), for: .touchUpInside)
         secondaryButton.addTarget(self, action: #selector(secondaryTapped), for: .touchUpInside)
+    }
+    
+    private func updateBottomConstraint() {
+        if hasSecondaryButton {
+            primaryButton.snp.removeConstraints()
+            primaryButton.snp.makeConstraints { make in
+                make.top.equalTo(topSeparator.snp.bottom).offset(8)
+                make.leading.equalToSuperview().offset(Constants.horizontalPadding)
+                make.trailing.equalToSuperview().offset(-Constants.horizontalPadding)
+                make.height.equalTo(Constants.buttonHeight)
+            }
+            secondaryButton.snp.remakeConstraints { make in
+                make.top.equalTo(primaryButton.snp.bottom).offset(8)
+                make.leading.equalToSuperview().offset(Constants.horizontalPadding)
+                make.trailing.equalToSuperview().offset(-Constants.horizontalPadding)
+                make.height.equalTo(Constants.buttonHeight)
+                make.bottom.equalTo(safeAreaLayoutGuide).offset(-8)
+            }
+        } else {
+            primaryButton.snp.remakeConstraints { make in
+                make.top.equalTo(topSeparator.snp.bottom).offset(8)
+                make.leading.equalToSuperview().offset(Constants.horizontalPadding)
+                make.trailing.equalToSuperview().offset(-Constants.horizontalPadding)
+                make.height.equalTo(Constants.buttonHeight)
+                make.bottom.equalTo(safeAreaLayoutGuide).offset(-8)
+            }
+        }
     }
     
     // MARK: - Configure
@@ -128,8 +151,8 @@ final class EventActionButtonView: UIView {
     private func configureSecondaryButton(with viewModel: ActionButtonViewModel?) {
         guard let viewModel = viewModel else {
             secondaryButton.isHidden = true
-            primaryButtonBottomConstraint?.isActive = true
-            secondaryButtonBottomConstraint?.isActive = false
+            hasSecondaryButton = false
+            updateBottomConstraint()
             return
         }
         
@@ -145,8 +168,8 @@ final class EventActionButtonView: UIView {
         secondaryButton.setTitleColor(.white, for: .normal)
         secondaryButton.tintColor = .white
         
-        primaryButtonBottomConstraint?.isActive = false
-        secondaryButtonBottomConstraint?.isActive = true
+        hasSecondaryButton = true
+        updateBottomConstraint()
     }
     
     // MARK: - Actions
@@ -159,5 +182,3 @@ final class EventActionButtonView: UIView {
         onSecondaryTapped?()
     }
 }
-
-

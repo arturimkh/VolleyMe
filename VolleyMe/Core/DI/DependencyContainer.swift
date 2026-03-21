@@ -11,6 +11,8 @@ import Foundation
 
 protocol IDependencyContainer {
     var requestProcessor: IRequestProcessor { get }
+    var keychainService: IKeychainService { get }
+    var tokenStorage: ITokenStorage { get }
 }
 
 // MARK: - Implementation
@@ -20,17 +22,18 @@ final class DependencyContainer: IDependencyContainer {
     // MARK: - Properties
     
     let requestProcessor: IRequestProcessor
+    let keychainService: IKeychainService
+    let tokenStorage: ITokenStorage
     
     // MARK: - Init
     
     init() {
-        // В реальном приложении можно переключать между Mock и Real
+        let keychain = KeychainService()
+        self.keychainService = keychain
+        self.tokenStorage = TokenStorage(keychainService: keychain)
+        
         #if DEBUG
         let mockProcessor = MockRequestProcessor()
-        // Меняй userRole для тестирования разных состояний:
-        // .viewer - просто смотрит (кнопка "Присоединиться")
-        // .participant - участник (кнопка "Покинуть встречу")
-        // .host - организатор (кнопки "Отменить встречу" и "Ссылка-приглашение")
         mockProcessor.userRole = .participant
         self.requestProcessor = mockProcessor
         #else
@@ -38,5 +41,6 @@ final class DependencyContainer: IDependencyContainer {
         #endif
     }
 }
+
 
 

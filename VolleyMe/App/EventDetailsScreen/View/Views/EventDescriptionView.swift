@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class EventDescriptionView: UIView {
     
@@ -15,7 +16,6 @@ final class EventDescriptionView: UIView {
         let view = UIView()
         view.backgroundColor = .systemGray6
         view.layer.cornerRadius = 12
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -24,7 +24,6 @@ final class EventDescriptionView: UIView {
         label.font = .systemFont(ofSize: 15)
         label.textColor = .label
         label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -33,7 +32,6 @@ final class EventDescriptionView: UIView {
         button.setTitleColor(UIColor(red: 0.2, green: 0.6, blue: 0.2, alpha: 1.0), for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
         button.contentHorizontalAlignment = .left
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -57,22 +55,25 @@ final class EventDescriptionView: UIView {
         containerView.addSubview(textLabel)
         containerView.addSubview(toggleButton)
         
-        NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            containerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-            textLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
-            textLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            textLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            
-            toggleButton.topAnchor.constraint(equalTo: textLabel.bottomAnchor, constant: 8),
-            toggleButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            toggleButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
-            toggleButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -16),
-            toggleButton.heightAnchor.constraint(equalToConstant: 20)
-        ])
+        containerView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+        }
+        
+        textLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+        }
+        
+        toggleButton.snp.makeConstraints { make in
+            make.top.equalTo(textLabel.snp.bottom).offset(8)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-16)
+            make.height.equalTo(20)
+        }
         
         toggleButton.addTarget(self, action: #selector(toggleTapped), for: .touchUpInside)
     }
@@ -96,5 +97,3 @@ final class EventDescriptionView: UIView {
         onToggleTapped?()
     }
 }
-
-

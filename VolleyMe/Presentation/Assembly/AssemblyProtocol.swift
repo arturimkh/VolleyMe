@@ -14,5 +14,3 @@ import UIKit
 ///     func assemble(with output: IProductsListOutput) -> UIViewController
 /// }
 protocol BaseAssembly {}
-
-

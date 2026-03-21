@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class CustomAlertViewController: UIViewController {
     
@@ -25,7 +26,6 @@ final class CustomAlertViewController: UIViewController {
         let view = UIView()
         view.backgroundColor = .systemBackground
         view.layer.cornerRadius = 16
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -33,7 +33,6 @@ final class CustomAlertViewController: UIViewController {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 16
-        stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
     
@@ -69,9 +68,6 @@ final class CustomAlertViewController: UIViewController {
         button.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
         button.tintColor = UIColor(red: 0.2, green: 0.4, blue: 0.8, alpha: 1.0)
         button.addTarget(self, action: #selector(checkboxTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.widthAnchor.constraint(equalToConstant: 24).isActive = true
-        button.heightAnchor.constraint(equalToConstant: 24).isActive = true
         return button
     }()
     
@@ -133,18 +129,23 @@ final class CustomAlertViewController: UIViewController {
         view.addSubview(containerView)
         containerView.addSubview(stackView)
         
-        NSLayoutConstraint.activate([
-            containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
-            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
-            
-            stackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 24),
-            stackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24),
-            stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24),
-            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -24)
-        ])
+        containerView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().offset(32)
+            make.trailing.equalToSuperview().offset(-32)
+        }
         
-        // Добавляем tap gesture для закрытия при нажатии на фон
+        stackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(24)
+            make.leading.equalToSuperview().offset(24)
+            make.trailing.equalToSuperview().offset(-24)
+            make.bottom.equalToSuperview().offset(-24)
+        }
+        
+        checkboxButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backgroundTapped))
         view.addGestureRecognizer(tapGesture)
     }
@@ -170,7 +171,9 @@ final class CustomAlertViewController: UIViewController {
         
         // Spacer
         let spacer = UIView()
-        spacer.heightAnchor.constraint(equalToConstant: 8).isActive = true
+        spacer.snp.makeConstraints { make in
+            make.height.equalTo(8)
+        }
         stackView.addArrangedSubview(spacer)
         
         // Primary Button
@@ -237,5 +240,3 @@ final class CustomAlertViewController: UIViewController {
         }
     }
 }
-
-

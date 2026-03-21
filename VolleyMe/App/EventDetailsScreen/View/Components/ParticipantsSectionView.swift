@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class ParticipantsSectionView: UIView {
     
@@ -16,7 +17,6 @@ final class ParticipantsSectionView: UIView {
         stack.axis = .horizontal
         stack.spacing = 8
         stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
     
@@ -38,7 +38,6 @@ final class ParticipantsSectionView: UIView {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 0
-        stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
     
@@ -63,16 +62,16 @@ final class ParticipantsSectionView: UIView {
         headerStackView.addArrangedSubview(countLabel)
         headerStackView.addArrangedSubview(UIView()) // Spacer
         
-        NSLayoutConstraint.activate([
-            headerStackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            headerStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            headerStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            
-            participantsStackView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor, constant: 8),
-            participantsStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            participantsStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            participantsStackView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
+        headerStackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+        }
+        
+        participantsStackView.snp.makeConstraints { make in
+            make.top.equalTo(headerStackView.snp.bottom).offset(8)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
     }
     
     // MARK: - Configure
@@ -81,19 +80,16 @@ final class ParticipantsSectionView: UIView {
         titleLabel.text = viewModel.title
         countLabel.text = viewModel.countText
         
-        // Очищаем старые ячейки
         participantsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        // Добавляем новые
         for participant in viewModel.participants {
             let cell = ParticipantCell(style: .default, reuseIdentifier: nil)
             cell.configure(with: participant)
             participantsStackView.addArrangedSubview(cell)
             
-            // Устанавливаем высоту ячейки
-            cell.heightAnchor.constraint(equalToConstant: 56).isActive = true
+            cell.snp.makeConstraints { make in
+                make.height.equalTo(56)
+            }
         }
     }
 }
-
-
