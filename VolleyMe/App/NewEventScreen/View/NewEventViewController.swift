@@ -86,6 +86,17 @@ final class NewEventViewController: UIViewController {
         return label
     }()
     
+    private lazy var cityFieldView: FormTextFieldView = {
+        let view = FormTextFieldView()
+        view.onTextChanged = { [weak self] text in
+            self?.presenter.didChangeCity(text)
+        }
+        view.onClearTapped = { [weak self] in
+            self?.presenter.didClearCity()
+        }
+        return view
+    }()
+    
     private lazy var addressFieldView: FormTextFieldView = {
         let view = FormTextFieldView()
         view.onTextChanged = { [weak self] text in
@@ -206,6 +217,7 @@ final class NewEventViewController: UIViewController {
         contentStackView.addArrangedSubview(titleFieldView)
         contentStackView.addArrangedSubview(dateFieldView)
         contentStackView.addArrangedSubview(createTimeFieldsSection())
+        contentStackView.addArrangedSubview(cityFieldView)
         contentStackView.addArrangedSubview(addressFieldView)
         contentStackView.addArrangedSubview(participantCountFieldView)
         contentStackView.addArrangedSubview(priceFieldView)
@@ -306,6 +318,7 @@ extension NewEventViewController: INewEventView {
         startTimeFieldView.configure(with: viewModel.startTimeField)
         endTimeFieldView.configure(with: viewModel.endTimeField)
         durationLabel.text = viewModel.durationText
+        cityFieldView.configure(with: viewModel.cityField)
         addressFieldView.configure(with: viewModel.addressField)
         participantCountFieldView.configure(with: viewModel.participantCountField)
         priceFieldView.configure(with: viewModel.priceField)

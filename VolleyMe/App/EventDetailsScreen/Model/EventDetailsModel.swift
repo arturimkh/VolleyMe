@@ -9,30 +9,38 @@ import Foundation
 
 // MARK: - API Response Models
 
-struct EventDetailsResponse: Codable {
+struct EventDetailsResponse: Decodable {
+    let id: String
     let title: String
     let startDt: String
     let endDt: String
     let city: String
     let address: String
-    let maxParticipantCount: Int
+    let participantsCount: Int
+    let maxParticipantsCount: Int
+    let myRole: String
     let price: String
     let currency: String
     let description: String
     let participants: [ParticipantResponse]
     let hosts: [ParticipantResponse]
-    let currentUserId: String
+    let isPublic: Bool
+    let imageUrls: [String]
+    let country: String
+    let gameType: Int
+    let formatType: Int
 }
 
-struct ParticipantResponse: Codable {
+struct ParticipantResponse: Decodable {
     let id: String
     let avatarUrl: String?
-    let name: String
+    let name: String?
 }
 
 // MARK: - Domain Models
 
 struct EventDetails {
+    let id: String
     let title: String
     let date: Date
     let startTime: Date
@@ -40,91 +48,94 @@ struct EventDetails {
     let duration: TimeInterval
     let city: String
     let address: String
-    let maxParticipantCount: Int
+    let participantsCount: Int
+    let maxParticipantsCount: Int
     let price: String
     let currency: String
     let description: String
     let participants: [Participant]
     let hosts: [Participant]
     let userRole: UserRole
-    let currentUserId: String
+    let isPublic: Bool
+    let imageUrls: [String]
     
     var isFull: Bool {
-        participants.count >= maxParticipantCount
+        participantsCount >= maxParticipantsCount
     }
 }
 
 struct Participant {
     let id: String
     let avatarUrl: String?
-    let name: String
-    let isCurrentUser: Bool
+    let name: String?
 }
 
 enum UserRole {
-    case viewer      // Просто смотрит
-    case participant // Участник
-    case host        // Организатор
+    case viewer
+    case participant
+    case host
+}
+
+extension EventParticipantRole {
+    var userRole: UserRole {
+        switch self {
+        case .host: return .host
+        case .participant: return .participant
+        case .nobody: return .viewer
+        }
+    }
 }
 
 // MARK: - Response to Domain Mapping
 
 extension EventDetailsResponse {
     func toDomain() -> EventDetails {
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
-        
-        let startDate = dateFormatter.date(from: startDt) ?? Date()
-        let endDate = dateFormatter.date(from: endDt) ?? Date()
-        let duration = endDate.timeIntervalSince(startDate)
-        
-        let domainParticipants = participants.map { participant in
-            Participant(
-                id: participant.id,
-                avatarUrl: participant.avatarUrl,
-                name: participant.name,
-                isCurrentUser: participant.id == currentUserId
-            )
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var startDate = formatter.date(from: startDt)
+        if startDate == nil {
+            formatter.formatOptions = [.withInternetDateTime]
+            startDate = formatter.date(from: startDt)
+        }
+        var endDate = formatter.date(from: endDt)
+        if endDate == nil {
+            formatter.formatOptions = [.withInternetDateTime]
+            endDate = formatter.date(from: endDt)
         }
         
-        let domainHosts = hosts.map { host in
-            Participant(
-                id: host.id,
-                avatarUrl: host.avatarUrl,
-                name: host.name,
-                isCurrentUser: host.id == currentUserId
-            )
-        }
+        let start = startDate ?? Date()
+        let end = endDate ?? Date()
+        let duration = end.timeIntervalSince(start)
         
-        // Определяем роль пользователя
-        let userRole: UserRole
-        if hosts.contains(where: { $0.id == currentUserId }) {
-            userRole = .host
-        } else if participants.contains(where: { $0.id == currentUserId }) {
-            userRole = .participant
-        } else {
-            userRole = .viewer
+        let apiRole = EventParticipantRole(rawValue: myRole) ?? .nobody
+        let userRole = apiRole.userRole
+        
+        let domainParticipants = participants.map {
+            Participant(id: $0.id, avatarUrl: $0.avatarUrl, name: $0.name)
+        }
+        let domainHosts = hosts.map {
+            Participant(id: $0.id, avatarUrl: $0.avatarUrl, name: $0.name)
         }
         
         return EventDetails(
+            id: id,
             title: title,
-            date: startDate,
-            startTime: startDate,
-            endTime: endDate,
+            date: start,
+            startTime: start,
+            endTime: end,
             duration: duration,
             city: city,
             address: address,
-            maxParticipantCount: maxParticipantCount,
+            participantsCount: participantsCount,
+            maxParticipantsCount: maxParticipantsCount,
             price: price,
             currency: currency,
             description: description,
             participants: domainParticipants,
             hosts: domainHosts,
             userRole: userRole,
-            currentUserId: currentUserId
+            isPublic: isPublic,
+            imageUrls: imageUrls
         )
     }
 }
-
-
-

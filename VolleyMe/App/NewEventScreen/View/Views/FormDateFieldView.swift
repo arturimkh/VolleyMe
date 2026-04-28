@@ -59,6 +59,7 @@ final class FormDateFieldView: UIView {
         picker.locale = Locale(identifier: "ru_RU")
         picker.minimumDate = Date()
         picker.contentHorizontalAlignment = .leading
+        picker.tintColor = .label
         picker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
         return picker
     }()
@@ -91,7 +92,8 @@ final class FormDateFieldView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        clearPickerBackground(datePicker)
+        datePicker.tintColor = .label
+        applyPlainCompactStyle(to: datePicker)
     }
     
     // MARK: - Setup
@@ -193,10 +195,23 @@ final class FormDateFieldView: UIView {
     
     // MARK: - Helpers
     
-    private func clearPickerBackground(_ view: UIView) {
-        for subview in view.subviews {
-            subview.backgroundColor = .clear
-            clearPickerBackground(subview)
+    /// Compact `UIDatePicker` draws the value as an accent-colored pill; flatten to plain label-like text.
+    private func applyPlainCompactStyle(to view: UIView) {
+        view.backgroundColor = .clear
+        if let label = view as? UILabel {
+            label.textColor = .label
+            label.backgroundColor = .clear
         }
+        if #available(iOS 15.0, *) {
+            if let button = view as? UIButton {
+                button.tintColor = .label
+                if var config = button.configuration {
+                    config.background.backgroundColor = .clear
+                    config.baseForegroundColor = .label
+                    button.configuration = config
+                }
+            }
+        }
+        view.subviews.forEach { applyPlainCompactStyle(to: $0) }
     }
 }

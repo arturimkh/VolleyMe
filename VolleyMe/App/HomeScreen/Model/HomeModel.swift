@@ -9,18 +9,27 @@ import Foundation
 
 // MARK: - API Response
 
-struct EventListResponse: Codable {
+struct PaginatedEventListResponse: Decodable {
+    let nextUrl: String
+    let prevUrl: String?
     let items: [EventListItemResponse]
 }
 
-struct EventListItemResponse: Codable {
+struct EventListItemResponse: Decodable {
     let id: String
-    let dateTime: String
-    let subtitle: String
-    let price: String
+    let title: String
+    let startDt: String
+    let city: String
     let address: String
-    let participantCount: Int
-    let type: String
+    let price: String
+    let participantsCount: Int
+    let maxParticipantsCount: Int
+    let myRole: String
+    let isPublic: Bool
+    let imageUrls: [String]
+    let country: String
+    let currency: String
+    let gameType: Int
 }
 
 // MARK: - Domain Models
@@ -28,15 +37,21 @@ struct EventListItemResponse: Codable {
 struct EventListItem {
     let id: String
     let dateTime: Date
-    let subtitle: String
+    let title: String
     let price: String
+    let city: String
     let address: String
-    let participantCount: Int
-    let role: EventRole
+    let participantsCount: Int
+    let maxParticipantsCount: Int
+    let role: EventParticipantRole
+    let isPublic: Bool
+    let imageUrls: [String]
+    let currency: String
 }
 
-enum EventRole: String {
-    case admin
+/// Matches OpenAPI `EventParticipantRole`: `"host"`, `"participant"`, `"nobody"`.
+enum EventParticipantRole: String {
+    case host
     case participant
     case nobody
 }
@@ -47,12 +62,14 @@ enum EventSection: Int, CaseIterable {
     case today
     case tomorrow
     case later
+    case past
     
     var title: String {
         switch self {
         case .today: return "Сегодня"
         case .tomorrow: return "Завтра"
         case .later: return "Позднее"
+        case .past: return "Ранее"
         }
     }
 }
@@ -82,24 +99,37 @@ enum HomeTab: Int, CaseIterable {
 
 extension EventListItemResponse {
     func toDomain() -> EventListItem {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        formatter.locale = Locale(identifier: "ru_RU")
-        let date = formatter.date(from: dateTime) ?? Date()
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        var date = formatter.date(from: startDt)
+        if date == nil {
+            formatter.formatOptions = [.withInternetDateTime]
+            date = formatter.date(from: startDt)
+        }
+        if date == nil {
+            let fallback = DateFormatter()
+            fallback.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+            date = fallback.date(from: startDt)
+        }
         
         return EventListItem(
             id: id,
-            dateTime: date,
-            subtitle: subtitle,
+            dateTime: date ?? Date(),
+            title: title,
             price: price,
+            city: city,
             address: address,
-            participantCount: participantCount,
-            role: EventRole(rawValue: type) ?? .nobody
+            participantsCount: participantsCount,
+            maxParticipantsCount: maxParticipantsCount,
+            role: EventParticipantRole(rawValue: myRole) ?? .nobody,
+            isPublic: isPublic,
+            imageUrls: imageUrls,
+            currency: currency
         )
     }
 }
 
-extension EventListResponse {
+extension PaginatedEventListResponse {
     func toDomain() -> [EventListItem] {
         items.map { $0.toDomain() }
     }

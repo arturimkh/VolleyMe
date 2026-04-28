@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Protocol
 
 protocol IHomeService {
-    func fetchEvents() async throws -> [EventListItem]
+    func fetchEvents(onlyMine: Bool) async throws -> [EventListItem]
 }
 
 // MARK: - Implementation
@@ -29,8 +29,9 @@ final class HomeService: IHomeService {
     
     // MARK: - IHomeService
     
-    func fetchEvents() async throws -> [EventListItem] {
-        let response: EventListResponse = try await requestProcessor.fetch("/events")
+    func fetchEvents(onlyMine: Bool) async throws -> [EventListItem] {
+        let endpoint = onlyMine ? "/events/?only_my_events=true" : "/events/"
+        let response: PaginatedEventListResponse = try await requestProcessor.fetch(endpoint)
         return response.toDomain()
     }
 }

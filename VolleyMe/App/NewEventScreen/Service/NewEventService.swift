@@ -27,12 +27,13 @@ final class NewEventService: INewEventService {
     init(requestProcessor: IRequestProcessor) {
         self.requestProcessor = requestProcessor
         self.encoder = JSONEncoder()
+        self.encoder.keyEncodingStrategy = .convertToSnakeCase
     }
     
     // MARK: - INewEventService
     
     func createEvent(dto: CreateEventDTO) async throws {
         let body = try encoder.encode(dto)
-        try await requestProcessor.post("/events", body: body)
+        try await requestProcessor.post("/events/", body: body)
     }
 }

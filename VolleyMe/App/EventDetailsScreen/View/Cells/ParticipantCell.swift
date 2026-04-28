@@ -94,13 +94,7 @@ final class ParticipantCell: UITableViewCell {
     func configure(with viewModel: ParticipantCellViewModel) {
         avatarLabel.text = viewModel.avatarText
         nameLabel.text = viewModel.name
-        currentUserLabel.text = viewModel.currentUserSuffix
-        currentUserLabel.isHidden = viewModel.currentUserSuffix == nil
-        
-        if viewModel.isCurrentUser {
-            nameLabel.textColor = .systemGray
-        } else {
-            nameLabel.textColor = .label
-        }
+        nameLabel.textColor = .label
+        currentUserLabel.isHidden = true
     }
 }

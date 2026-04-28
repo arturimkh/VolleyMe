@@ -27,6 +27,8 @@ protocol INewEventPresenter {
     // Text fields
     func didChangeTitle(_ text: String)
     func didClearTitle()
+    func didChangeCity(_ text: String)
+    func didClearCity()
     func didChangeAddress(_ text: String)
     func didClearAddress()
     func didChangePrice(_ text: String)
@@ -55,6 +57,9 @@ final class NewEventPresenter: INewEventPresenter {
     private let viewModelFactory: INewEventViewModelFactory
     private var formData = NewEventFormData()
     
+    /// Inline field errors (red borders) only after the user tries to submit an invalid form.
+    private var showInlineValidationErrors = false
+    
     // MARK: - Init
     
     init(service: INewEventService, viewModelFactory: INewEventViewModelFactory) {
@@ -76,6 +81,8 @@ final class NewEventPresenter: INewEventPresenter {
         formData.validate()
         
         guard formData.isValid else {
+            showInlineValidationErrors = true
+            updateView()
             return
         }
         
@@ -94,31 +101,36 @@ final class NewEventPresenter: INewEventPresenter {
     
     func didChangeTitle(_ text: String) {
         formData.title = text
-        formData.validate()
         updateView()
     }
     
     func didClearTitle() {
         formData.title = ""
-        formData.validate()
+        updateView()
+    }
+    
+    func didChangeCity(_ text: String) {
+        formData.city = text
+        updateView()
+    }
+    
+    func didClearCity() {
+        formData.city = ""
         updateView()
     }
     
     func didChangeAddress(_ text: String) {
         formData.address = text
-        formData.validate()
         updateView()
     }
     
     func didClearAddress() {
         formData.address = ""
-        formData.validate()
         updateView()
     }
     
     func didChangePrice(_ text: String) {
         formData.price = text
-        formData.validate()
         updateView()
     }
     
@@ -136,32 +148,31 @@ final class NewEventPresenter: INewEventPresenter {
     
     func didChangeStartTime(_ time: Date) {
         formData.startTime = time
-        formData.validate()
         updateView()
     }
     
     func didChangeEndTime(_ time: Date) {
         formData.endTime = time
-        formData.validate()
         updateView()
     }
     
     // MARK: - Stepper
     
     func didIncrementParticipants() {
-        formData.maxParticipantCount += 1
+        formData.maxParticipantsCount += 1
         updateView()
     }
     
     func didDecrementParticipants() {
-        formData.maxParticipantCount = max(1, formData.maxParticipantCount - 1)
+        formData.maxParticipantsCount = max(1, formData.maxParticipantsCount - 1)
         updateView()
     }
     
     // MARK: - Private
     
     private func updateView() {
-        let viewModel = viewModelFactory.makeViewModel(from: formData)
+        formData.validate()
+        let viewModel = viewModelFactory.makeViewModel(from: formData, showValidationErrors: showInlineValidationErrors)
         view?.configure(with: viewModel)
     }
 }

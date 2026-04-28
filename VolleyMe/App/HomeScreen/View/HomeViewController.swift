@@ -42,6 +42,7 @@ final class HomeViewController: UIViewController {
         table.delegate = self
         table.dataSource = self
         table.register(EventCardCell.self, forCellReuseIdentifier: EventCardCell.reuseIdentifier)
+        table.register(CreateEventButtonCell.self, forCellReuseIdentifier: CreateEventButtonCell.reuseIdentifier)
         table.register(SectionHeaderView.self, forHeaderFooterViewReuseIdentifier: SectionHeaderView.reuseIdentifier)
         table.showsVerticalScrollIndicator = false
         table.sectionFooterHeight = 0
@@ -53,14 +54,6 @@ final class HomeViewController: UIViewController {
         let control = UIRefreshControl()
         control.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
         return control
-    }()
-    
-    private lazy var createEventButton: CreateEventButton = {
-        let view = CreateEventButton()
-        view.onTapped = { [weak self] in
-            self?.presenter.didTapCreateEvent()
-        }
-        return view
     }()
     
     private lazy var emptyStateView: EmptyStateView = {
@@ -103,6 +96,7 @@ final class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        presenter.viewWillAppear()
     }
     
     // MARK: - Setup
@@ -153,12 +147,14 @@ final class HomeViewController: UIViewController {
     // MARK: - Private
     
     private func showLoadingState() {
+        refreshControl.endRefreshing()
         loadingIndicator.startAnimating()
         tableView.isHidden = true
         emptyStateView.isHidden = true
     }
     
     private func showEmptyState(viewModel: EmptyStateViewModel) {
+        refreshControl.endRefreshing()
         loadingIndicator.stopAnimating()
         tableView.isHidden = true
         emptyStateView.isHidden = false
@@ -197,6 +193,16 @@ extension HomeViewController: IHomeView {
         }
     }
     
+    func showError(_ message: String) {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
     func showLogoutAlert() {
         let alert = LogoutAlertViewController()
         alert.onConfirmLogout = { [weak self] in
@@ -227,18 +233,14 @@ extension HomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if showCreateButton && indexPath.section == 0 {
-            let cell = UITableViewCell()
-            cell.selectionStyle = .none
-            cell.backgroundColor = .clear
-            cell.contentView.backgroundColor = .clear
-            
-            let button = CreateEventButton()
-            button.onTapped = { [weak self] in
-                self?.presenter.didTapCreateEvent()
+            guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: CreateEventButtonCell.reuseIdentifier,
+                for: indexPath
+            ) as? CreateEventButtonCell else {
+                return UITableViewCell()
             }
-            cell.contentView.addSubview(button)
-            button.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
+            cell.onCreateTapped = { [weak self] in
+                self?.presenter.didTapCreateEvent()
             }
             return cell
         }
@@ -293,11 +295,19 @@ extension HomeViewController: UITableViewDelegate {
         return nil
     }
     
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if showCreateButton && indexPath.section == 0 { return indexPath }
+        let sectionIndex = showCreateButton ? indexPath.section - 1 : indexPath.section
+        let item = sections[sectionIndex].items[indexPath.row]
+        return item.isSelectable ? indexPath : nil
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if showCreateButton && indexPath.section == 0 { return }
         
         let sectionIndex = showCreateButton ? indexPath.section - 1 : indexPath.section
         let item = sections[sectionIndex].items[indexPath.row]
+        guard item.isSelectable else { return }
         presenter.didTapEvent(id: item.id)
     }
 }

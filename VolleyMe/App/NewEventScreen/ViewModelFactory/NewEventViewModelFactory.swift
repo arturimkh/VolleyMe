@@ -8,14 +8,14 @@
 import UIKit
 
 protocol INewEventViewModelFactory {
-    func makeViewModel(from formData: NewEventFormData) -> NewEventViewModel
+    func makeViewModel(from formData: NewEventFormData, showValidationErrors: Bool) -> NewEventViewModel
 }
 
 final class NewEventViewModelFactory: INewEventViewModelFactory {
     
     // MARK: - INewEventViewModelFactory
     
-    func makeViewModel(from formData: NewEventFormData) -> NewEventViewModel {
+    func makeViewModel(from formData: NewEventFormData, showValidationErrors: Bool) -> NewEventViewModel {
         
         // Расчет продолжительности
         let durationInMinutes = Int(formData.endTime.timeIntervalSince(formData.startTime) / 60)
@@ -33,6 +33,10 @@ final class NewEventViewModelFactory: INewEventViewModelFactory {
             durationText = "Продолжительность: \(minutes) мин"
         }
         
+        func error(_ key: ValidationError) -> String? {
+            showValidationErrors ? formData.getError(for: key) : nil
+        }
+        
         return NewEventViewModel(
             titleField: FormTextFieldViewModel(
                 placeholder: "Название встречи",
@@ -42,7 +46,7 @@ final class NewEventViewModelFactory: INewEventViewModelFactory {
                 showClearButton: true,
                 isMultiline: false,
                 hint: nil,
-                errorMessage: formData.getError(for: .emptyTitle)
+                errorMessage: error(.emptyTitle)
             ),
             dateField: FormDateFieldViewModel(
                 label: "Дата",
@@ -60,9 +64,19 @@ final class NewEventViewModelFactory: INewEventViewModelFactory {
                 label: "Окончание встречи",
                 time: formData.endTime,
                 icon: UIImage(systemName: "clock"),
-                errorMessage: formData.getError(for: .invalidTimeRange)
+                errorMessage: error(.invalidTimeRange)
             ),
             durationText: durationText,
+            cityField: FormTextFieldViewModel(
+                placeholder: "Город",
+                text: formData.city,
+                keyboardType: .default,
+                icon: UIImage(systemName: "building.2"),
+                showClearButton: true,
+                isMultiline: false,
+                hint: nil,
+                errorMessage: error(.emptyCity)
+            ),
             addressField: FormTextFieldViewModel(
                 placeholder: "Адрес",
                 text: formData.address,
@@ -71,11 +85,11 @@ final class NewEventViewModelFactory: INewEventViewModelFactory {
                 showClearButton: true,
                 isMultiline: false,
                 hint: nil,
-                errorMessage: formData.getError(for: .emptyAddress)
+                errorMessage: error(.emptyAddress)
             ),
             participantCountField: FormStepperFieldViewModel(
                 label: "Количество участников",
-                value: formData.maxParticipantCount,
+                value: formData.maxParticipantsCount,
                 minValue: 1,
                 maxValue: 99,
                 hint: "Максимальное количество участников, включая вас.",
@@ -89,7 +103,7 @@ final class NewEventViewModelFactory: INewEventViewModelFactory {
                 showClearButton: false,
                 isMultiline: false,
                 hint: "Укажите стоимость для одного участника, если встреча является платной. Например, если вы арендуете платную площадку.",
-                errorMessage: formData.getError(for: .invalidPrice)
+                errorMessage: error(.invalidPrice)
             ),
             commentField: FormTextFieldViewModel(
                 placeholder: "Комментарий для участников",

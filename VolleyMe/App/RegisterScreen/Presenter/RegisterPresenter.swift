@@ -25,7 +25,7 @@ protocol IRegisterOutput: AnyObject {
 
 protocol IRegisterPresenter {
     func viewDidLoad()
-    func didUpdateNickname(_ text: String)
+    func didUpdateEmail(_ text: String)
     func didUpdatePassword(_ text: String)
     func didUpdateConfirmPassword(_ text: String)
     func didTapSubmit()
@@ -45,15 +45,13 @@ final class RegisterPresenter {
     private let tokenStorage: ITokenStorage
     private let viewModelFactory: IRegisterViewModelFactory
     
-    private var nickname = ""
+    private var email = ""
     private var password = ""
     private var confirmPassword = ""
     private var state: RegisterState = .idle
     private var validationErrors: [RegisterValidationError] = []
     
     private enum Constants {
-        static let minNicknameLength = 3
-        static let minPasswordLength = 6
         static let successDelay: TimeInterval = 2.0
     }
     
@@ -73,7 +71,7 @@ final class RegisterPresenter {
     
     private func updateView() {
         let viewModel = viewModelFactory.makeViewModel(
-            nickname: nickname,
+            email: email,
             password: password,
             confirmPassword: confirmPassword,
             state: state,
@@ -85,16 +83,16 @@ final class RegisterPresenter {
     private func validate() -> Bool {
         validationErrors = []
         
-        if nickname.isEmpty {
-            validationErrors.append(.nicknameEmpty)
-        } else if nickname.count < Constants.minNicknameLength {
-            validationErrors.append(.nicknameTooShort)
+        if email.isEmpty {
+            validationErrors.append(.emailEmpty)
+        } else if !isValidNickname(email) {
+            validationErrors.append(.emailInvalid)
         }
         
         if password.isEmpty {
             validationErrors.append(.passwordEmpty)
-        } else if password.count < Constants.minPasswordLength {
-            validationErrors.append(.passwordTooShort)
+        } else if !PasswordPolicy.isValid(password) {
+            validationErrors.append(.passwordDoesNotMeetPolicy)
         }
         
         if password != confirmPassword {
@@ -104,27 +102,36 @@ final class RegisterPresenter {
         return validationErrors.isEmpty
     }
     
+    /// Backend stores the field as `username`. We only check that the value uses Latin chars/digits/symbols
+    /// and contains no whitespace; uniqueness and final format are validated server-side.
+    private func isValidNickname(_ nickname: String) -> Bool {
+        let regex = #"^[A-Za-z0-9._%+\-@]+$"#
+        return nickname.range(of: regex, options: .regularExpression) != nil
+    }
+
+    private func userMessage(from error: Error) -> String {
+        (error as? LocalizedError)?.errorDescription ?? "Произошла ошибка. Попробуйте позже."
+    }
+
     private func performRegister() {
         state = .loading
         updateView()
         
         Task { @MainActor in
             do {
-                let response = try await service.register(nickname: nickname, password: password)
+                let response = try await service.register(email: email, password: password)
                 tokenStorage.save(tokens: AuthTokens(
                     accessToken: response.accessToken,
-                    refreshToken: response.refreshToken
+                    refreshToken: response.refreshToken,
+                    userEmail: email
                 ))
                 state = .success
                 updateView()
                 
                 try await Task.sleep(nanoseconds: UInt64(Constants.successDelay * 1_000_000_000))
                 output?.registerDidFinish()
-            } catch let error as RegisterError {
-                state = .error(error.localizedDescription ?? "Ошибка регистрации")
-                updateView()
             } catch {
-                state = .error("Произошла ошибка. Попробуйте позже.")
+                state = .error(userMessage(from: error))
                 updateView()
             }
         }
@@ -139,20 +146,23 @@ extension RegisterPresenter: IRegisterPresenter {
         updateView()
     }
     
-    func didUpdateNickname(_ text: String) {
-        nickname = text
+    func didUpdateEmail(_ text: String) {
+        email = text
+        if case .error = state { state = .idle }
         if !validationErrors.isEmpty { validationErrors = [] }
         updateView()
     }
     
     func didUpdatePassword(_ text: String) {
         password = text
+        if case .error = state { state = .idle }
         if !validationErrors.isEmpty { validationErrors = [] }
         updateView()
     }
     
     func didUpdateConfirmPassword(_ text: String) {
         confirmPassword = text
+        if case .error = state { state = .idle }
         if !validationErrors.isEmpty { validationErrors = [] }
         updateView()
     }

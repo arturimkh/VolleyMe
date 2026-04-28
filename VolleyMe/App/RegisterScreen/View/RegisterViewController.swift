@@ -29,31 +29,14 @@ final class RegisterViewController: UIViewController {
     
     // MARK: - UI Elements
     
-    private lazy var closeButton: UIButton = {
-        let button = UIButton(type: .system)
-        let config = UIImage.SymbolConfiguration(pointSize: 17, weight: .medium)
-        button.setImage(UIImage(systemName: "xmark", withConfiguration: config), for: .normal)
-        button.tintColor = .systemBlue
-        button.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Новый аккаунт"
-        label.font = .systemFont(ofSize: 17, weight: .semibold)
-        label.textColor = .label
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private lazy var nicknameField: RegisterTextField = {
+    private lazy var emailField: RegisterTextField = {
         let field = RegisterTextField(placeholder: "Никнейм", isSecure: false)
         field.returnKeyType = .next
         field.autocapitalizationType = .none
         field.autocorrectionType = .no
+        field.keyboardType = .default
         field.delegate = self
-        field.addTarget(self, action: #selector(nicknameChanged), for: .editingChanged)
+        field.addTarget(self, action: #selector(emailChanged), for: .editingChanged)
         return field
     }()
     
@@ -62,6 +45,7 @@ final class RegisterViewController: UIViewController {
         field.returnKeyType = .next
         field.autocapitalizationType = .none
         field.autocorrectionType = .no
+        field.textContentType = .oneTimeCode
         field.delegate = self
         field.addTarget(self, action: #selector(passwordChanged), for: .editingChanged)
         field.setToggleAction(target: self, action: #selector(togglePasswordVisibility))
@@ -73,6 +57,7 @@ final class RegisterViewController: UIViewController {
         field.returnKeyType = .done
         field.autocapitalizationType = .none
         field.autocorrectionType = .no
+        field.textContentType = .oneTimeCode
         field.delegate = self
         field.addTarget(self, action: #selector(confirmPasswordChanged), for: .editingChanged)
         field.setToggleAction(target: self, action: #selector(toggleConfirmVisibility))
@@ -86,6 +71,16 @@ final class RegisterViewController: UIViewController {
         label.numberOfLines = 0
         label.isHidden = true
         return label
+    }()
+    
+    private let passwordRequirementsStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .fill
+        stack.distribution = .fill
+        stack.spacing = 6
+        stack.isHidden = true
+        return stack
     }()
     
     private lazy var submitButton: UIButton = {
@@ -178,13 +173,19 @@ final class RegisterViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(closeButton)
-        view.addSubview(titleLabel)
+        title = "Новый аккаунт"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .close,
+            target: self,
+            action: #selector(closeTapped)
+        )
+        
         view.addSubview(formContainerView)
         
-        formContainerView.addSubview(nicknameField)
+        formContainerView.addSubview(emailField)
         formContainerView.addSubview(passwordField)
         formContainerView.addSubview(confirmPasswordField)
+        formContainerView.addSubview(passwordRequirementsStack)
         formContainerView.addSubview(passwordMismatchLabel)
         formContainerView.addSubview(submitButton)
         submitButton.addSubview(loadingIndicator)
@@ -195,31 +196,20 @@ final class RegisterViewController: UIViewController {
         successContainerView.addSubview(successSubtitleLabel)
         successContainerView.addSubview(successProgressView)
         
-        closeButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(12)
-            make.size.equalTo(32)
-        }
-        
-        titleLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalTo(closeButton)
-        }
-        
         formContainerView.snp.makeConstraints { make in
-            make.top.equalTo(closeButton.snp.bottom).offset(32)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(32)
             make.leading.trailing.equalToSuperview()
             formCenterYConstraint = make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide).offset(-16).constraint
         }
         
-        nicknameField.snp.makeConstraints { make in
+        emailField.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalPadding)
             make.height.equalTo(Constants.fieldHeight)
         }
         
         passwordField.snp.makeConstraints { make in
-            make.top.equalTo(nicknameField.snp.bottom).offset(Constants.fieldSpacing)
+            make.top.equalTo(emailField.snp.bottom).offset(Constants.fieldSpacing)
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalPadding)
             make.height.equalTo(Constants.fieldHeight)
         }
@@ -230,8 +220,13 @@ final class RegisterViewController: UIViewController {
             make.height.equalTo(Constants.fieldHeight)
         }
         
+        passwordRequirementsStack.snp.makeConstraints { make in
+            make.top.equalTo(confirmPasswordField.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(Constants.horizontalPadding)
+        }
+        
         passwordMismatchLabel.snp.makeConstraints { make in
-            make.top.equalTo(confirmPasswordField.snp.bottom).offset(6)
+            make.top.equalTo(passwordRequirementsStack.snp.bottom).offset(6)
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalPadding)
         }
         
@@ -282,6 +277,7 @@ final class RegisterViewController: UIViewController {
     private func setupKeyboardDismiss() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
+        tap.delegate = self
         view.addGestureRecognizer(tap)
     }
     
@@ -310,8 +306,7 @@ final class RegisterViewController: UIViewController {
         
         UIView.animate(withDuration: 0.4) {
             self.formContainerView.alpha = 0
-            self.closeButton.alpha = 0
-            self.titleLabel.alpha = 0
+            self.navigationController?.navigationBar.alpha = 0
             self.successContainerView.alpha = 1
         }
         
@@ -326,8 +321,8 @@ final class RegisterViewController: UIViewController {
         presenter.didTapClose()
     }
     
-    @objc private func nicknameChanged() {
-        presenter.didUpdateNickname(nicknameField.text ?? "")
+    @objc private func emailChanged() {
+        presenter.didUpdateEmail(emailField.text ?? "")
     }
     
     @objc private func passwordChanged() {
@@ -373,6 +368,29 @@ final class RegisterViewController: UIViewController {
         }
     }
     
+    // MARK: - Password requirements
+    
+    private func renderPasswordRequirements(_ requirements: [PasswordRequirementViewModel]) {
+        guard !requirements.isEmpty else {
+            passwordRequirementsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            passwordRequirementsStack.isHidden = true
+            return
+        }
+        
+        passwordRequirementsStack.isHidden = false
+        
+        if passwordRequirementsStack.arrangedSubviews.count != requirements.count {
+            passwordRequirementsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            for _ in requirements {
+                passwordRequirementsStack.addArrangedSubview(PasswordRequirementRowView())
+            }
+        }
+        
+        zip(passwordRequirementsStack.arrangedSubviews, requirements).forEach { view, model in
+            (view as? PasswordRequirementRowView)?.configure(with: model)
+        }
+    }
+    
     @objc private func keyboardWillHide(_ notification: Notification) {
         guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
               let curveRaw = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
@@ -392,8 +410,8 @@ final class RegisterViewController: UIViewController {
 extension RegisterViewController: IRegisterView {
     
     func configure(with viewModel: RegisterViewModel) {
-        nicknameField.updateState(hasError: viewModel.nicknameField.hasError)
-        nicknameField.isEnabled = viewModel.nicknameField.isEnabled
+        emailField.updateState(hasError: viewModel.emailField.hasError)
+        emailField.isEnabled = viewModel.emailField.isEnabled
         
         passwordField.updateState(hasError: viewModel.passwordField.hasError)
         passwordField.isEnabled = viewModel.passwordField.isEnabled
@@ -401,12 +419,20 @@ extension RegisterViewController: IRegisterView {
         confirmPasswordField.updateState(hasError: viewModel.confirmPasswordField.hasError)
         confirmPasswordField.isEnabled = viewModel.confirmPasswordField.isEnabled
         
-        if let mismatch = viewModel.passwordMismatchError {
+        if let server = viewModel.serverErrorMessage {
+            passwordMismatchLabel.text = server
+            passwordMismatchLabel.isHidden = false
+        } else if let mismatch = viewModel.passwordMismatchError {
             passwordMismatchLabel.text = mismatch
+            passwordMismatchLabel.isHidden = false
+        } else if let hint = viewModel.validationMessage {
+            passwordMismatchLabel.text = hint
             passwordMismatchLabel.isHidden = false
         } else {
             passwordMismatchLabel.isHidden = true
         }
+        
+        renderPasswordRequirements(viewModel.passwordRequirements)
         
         submitButton.setTitle(viewModel.submitButton.title, for: .normal)
         submitButton.isEnabled = viewModel.submitButton.isEnabled
@@ -432,12 +458,20 @@ extension RegisterViewController: IRegisterView {
     }
 }
 
+// MARK: - UIGestureRecognizerDelegate
+
+extension RegisterViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return !(touch.view is UIControl)
+    }
+}
+
 // MARK: - UITextFieldDelegate
 
 extension RegisterViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == nicknameField {
+        if textField == emailField {
             passwordField.becomeFirstResponder()
         } else if textField == passwordField {
             confirmPasswordField.becomeFirstResponder()
@@ -446,6 +480,57 @@ extension RegisterViewController: UITextFieldDelegate {
             presenter.didTapSubmit()
         }
         return true
+    }
+}
+
+// MARK: - PasswordRequirementRowView
+
+final class PasswordRequirementRowView: UIView {
+    
+    private let iconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.setContentHuggingPriority(.required, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return imageView
+    }()
+    
+    private let textLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 13)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    init() {
+        super.init(frame: .zero)
+        addSubview(iconImageView)
+        addSubview(textLabel)
+        
+        iconImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.top.equalToSuperview().offset(1)
+            make.width.height.equalTo(14)
+        }
+        
+        textLabel.snp.makeConstraints { make in
+            make.leading.equalTo(iconImageView.snp.trailing).offset(8)
+            make.trailing.equalToSuperview()
+            make.top.bottom.equalToSuperview()
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configure(with model: PasswordRequirementViewModel) {
+        textLabel.text = model.text
+        let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+        let symbolName = model.isSatisfied ? "checkmark" : "xmark"
+        iconImageView.image = UIImage(systemName: symbolName, withConfiguration: config)
+        iconImageView.tintColor = model.isSatisfied ? .systemGreen : .systemRed
     }
 }
 

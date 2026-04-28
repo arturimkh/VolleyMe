@@ -78,6 +78,7 @@ struct EventCardViewModel {
     let priceColor: UIColor
     let participantCountText: String
     let roleBadge: EventRoleBadgeViewModel?
+    let isSelectable: Bool
 }
 
 // MARK: - Role Badge

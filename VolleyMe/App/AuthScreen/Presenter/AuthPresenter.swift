@@ -24,7 +24,7 @@ protocol IAuthOutput: AnyObject {
 
 protocol IAuthPresenter {
     func viewDidLoad()
-    func didUpdateNickname(_ text: String)
+    func didUpdateEmail(_ text: String)
     func didUpdatePassword(_ text: String)
     func didTapLogin()
     func didTapRegister()
@@ -43,14 +43,12 @@ final class AuthPresenter {
     private let tokenStorage: ITokenStorage
     private let viewModelFactory: IAuthViewModelFactory
     
-    private var nickname = ""
+    private var email = ""
     private var password = ""
     private var state: AuthState = .idle
     private var validationErrors: [AuthValidationError] = []
     
     private enum Constants {
-        static let minNicknameLength = 3
-        static let minPasswordLength = 6
         static let successDelay: TimeInterval = 2.0
     }
     
@@ -70,7 +68,7 @@ final class AuthPresenter {
     
     private func updateView() {
         let viewModel = viewModelFactory.makeViewModel(
-            nickname: nickname,
+            email: email,
             password: password,
             state: state,
             validationErrors: validationErrors
@@ -81,19 +79,30 @@ final class AuthPresenter {
     private func validate() -> Bool {
         validationErrors = []
         
-        if nickname.isEmpty {
-            validationErrors.append(.nicknameEmpty)
-        } else if nickname.count < Constants.minNicknameLength {
-            validationErrors.append(.nicknameTooShort)
+        if email.isEmpty {
+            validationErrors.append(.emailEmpty)
+        } else if !isValidNickname(email) {
+            validationErrors.append(.emailInvalid)
         }
         
         if password.isEmpty {
             validationErrors.append(.passwordEmpty)
-        } else if password.count < Constants.minPasswordLength {
-            validationErrors.append(.passwordTooShort)
+        } else if !PasswordPolicy.isValid(password) {
+            validationErrors.append(.passwordDoesNotMeetPolicy)
         }
         
         return validationErrors.isEmpty
+    }
+    
+    /// Backend stores the field as `username`. We only check that the value uses Latin chars/digits/symbols
+    /// and contains no whitespace; uniqueness and final format are validated server-side.
+    private func isValidNickname(_ nickname: String) -> Bool {
+        let regex = #"^[A-Za-z0-9._%+\-@]+$"#
+        return nickname.range(of: regex, options: .regularExpression) != nil
+    }
+
+    private func userMessage(from error: Error) -> String {
+        (error as? LocalizedError)?.errorDescription ?? "Произошла ошибка. Попробуйте позже."
     }
 }
 
@@ -105,21 +114,17 @@ extension AuthPresenter: IAuthPresenter {
         updateView()
     }
     
-    func didUpdateNickname(_ text: String) {
-        nickname = text
-        if state == .error("") || !validationErrors.isEmpty {
-            state = .idle
-            validationErrors = []
-        }
+    func didUpdateEmail(_ text: String) {
+        email = text
+        if case .error(_) = state { state = .idle }
+        if !validationErrors.isEmpty { validationErrors = [] }
         updateView()
     }
     
     func didUpdatePassword(_ text: String) {
         password = text
-        if state == .error("") || !validationErrors.isEmpty {
-            state = .idle
-            validationErrors = []
-        }
+        if case .error(_) = state { state = .idle }
+        if !validationErrors.isEmpty { validationErrors = [] }
         updateView()
     }
     
@@ -134,21 +139,19 @@ extension AuthPresenter: IAuthPresenter {
         
         Task { @MainActor in
             do {
-                let response = try await service.login(nickname: nickname, password: password)
+                let response = try await service.login(email: email, password: password)
                 tokenStorage.save(tokens: AuthTokens(
                     accessToken: response.accessToken,
-                    refreshToken: response.refreshToken
+                    refreshToken: response.refreshToken,
+                    userEmail: email
                 ))
                 state = .success
                 updateView()
                 
                 try await Task.sleep(nanoseconds: UInt64(Constants.successDelay * 1_000_000_000))
                 output?.authDidFinish()
-            } catch let error as AuthError {
-                state = .error(error.localizedDescription ?? "Ошибка авторизации")
-                updateView()
             } catch {
-                state = .error("Произошла ошибка. Попробуйте позже.")
+                state = .error(userMessage(from: error))
                 updateView()
             }
         }

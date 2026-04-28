@@ -125,6 +125,8 @@ final class EventCardCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         badgeContainer.isHidden = true
+        cardView.alpha = 1
+        isUserInteractionEnabled = true
     }
     
     // MARK: - Setup
@@ -210,5 +212,8 @@ final class EventCardCell: UITableViewCell {
         } else {
             badgeContainer.isHidden = true
         }
+        
+        cardView.alpha = viewModel.isSelectable ? 1 : 0.45
+        isUserInteractionEnabled = viewModel.isSelectable
     }
 }

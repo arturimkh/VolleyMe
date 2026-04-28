@@ -13,6 +13,7 @@ struct OnboardingViewModel {
     let title: String
     let subtitle: String
     let buttonTitle: String
+    let image: UIImage?
     let placeholderText: String
     let placeholderColor: UIColor
     let showBackButton: Bool

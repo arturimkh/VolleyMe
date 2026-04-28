@@ -21,12 +21,18 @@ final class HomeAssembly: IHomeAssembly {
     
     private let requestProcessor: IRequestProcessor
     private let tokenStorage: ITokenStorage
+    private let logoutService: ILogoutService
     
     // MARK: - Init
     
-    init(requestProcessor: IRequestProcessor, tokenStorage: ITokenStorage) {
+    init(
+        requestProcessor: IRequestProcessor,
+        tokenStorage: ITokenStorage,
+        logoutService: ILogoutService
+    ) {
         self.requestProcessor = requestProcessor
         self.tokenStorage = tokenStorage
+        self.logoutService = logoutService
     }
     
     // MARK: - IHomeAssembly
@@ -38,6 +44,7 @@ final class HomeAssembly: IHomeAssembly {
         let presenter = HomePresenter(
             service: service,
             tokenStorage: tokenStorage,
+            logoutService: logoutService,
             viewModelFactory: viewModelFactory
         )
         

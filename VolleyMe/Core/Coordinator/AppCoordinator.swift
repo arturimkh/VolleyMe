@@ -14,6 +14,8 @@ final class AppCoordinator {
     
     private let window: UIWindow
     private var mainFlowController: MainFlowController?
+    private var isShowingAuth = false
+    private var sessionExpiredObserver: NSObjectProtocol?
     
     // DI
     private let dependencyContainer: IDependencyContainer
@@ -23,6 +25,20 @@ final class AppCoordinator {
     init(window: UIWindow, dependencyContainer: IDependencyContainer) {
         self.window = window
         self.dependencyContainer = dependencyContainer
+        
+        sessionExpiredObserver = NotificationCenter.default.addObserver(
+            forName: .userSessionExpired,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleSessionExpired()
+        }
+    }
+    
+    deinit {
+        if let sessionExpiredObserver {
+            NotificationCenter.default.removeObserver(sessionExpiredObserver)
+        }
     }
     
     // MARK: - Public Methods
@@ -65,6 +81,12 @@ final class AppCoordinator {
     }
     
     private func showAuth() {
+        // Dismiss any modal that may sit on top of the current root (e.g. the
+        // register flow) so the transition leaves a clean state.
+        window.rootViewController?.dismiss(animated: false)
+        mainFlowController = nil
+        isShowingAuth = true
+        
         let assembly = AuthAssembly(
             requestProcessor: dependencyContainer.requestProcessor,
             tokenStorage: dependencyContainer.tokenStorage
@@ -72,6 +94,13 @@ final class AppCoordinator {
         let auth = assembly.assemble(output: self)
         
         transition(to: auth)
+    }
+    
+    private func handleSessionExpired() {
+        // Idempotent: ignore stray notifications if the user is already on the
+        // auth screen (e.g. multiple parallel 401s after a logout).
+        guard !isShowingAuth else { return }
+        showAuth()
     }
     
     private func transition(to viewController: UIViewController) {
@@ -86,9 +115,11 @@ final class AppCoordinator {
     }
     
     private func showMainFlow() {
+        isShowingAuth = false
         let homeAssembly = HomeAssembly(
             requestProcessor: dependencyContainer.requestProcessor,
-            tokenStorage: dependencyContainer.tokenStorage
+            tokenStorage: dependencyContainer.tokenStorage,
+            logoutService: dependencyContainer.logoutService
         )
         let eventDetailsAssembly = EventDetailsAssembly(
             requestProcessor: dependencyContainer.requestProcessor

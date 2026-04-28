@@ -230,7 +230,7 @@ private extension EventDetailsPresenter {
         
         Task { @MainActor in
             do {
-                try await service.cancelEvent(eventId: eventId)
+                try await service.deleteEvent(eventId: eventId)
                 isLoading = false
                 view?.dismissAlert()
                 output?.eventDetailsDidCancelEvent()
@@ -244,7 +244,7 @@ private extension EventDetailsPresenter {
     
     func shareInviteLink() {
         // TODO: Реализовать шаринг ссылки
-        let link = "https://volleyme.app/event/\(eventId)"
+        let link = "https://volleyme.ru/event/\(eventId)"
         UIPasteboard.general.string = link
     }
 }

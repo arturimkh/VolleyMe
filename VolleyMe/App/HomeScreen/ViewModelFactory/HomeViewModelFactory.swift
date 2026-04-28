@@ -12,6 +12,7 @@ import UIKit
 protocol IHomeViewModelFactory {
     func makeViewModel(
         selectedTab: HomeTab,
+        userEmail: String?,
         myEvents: [EventListItem],
         findEvents: [EventListItem],
         isLoading: Bool
@@ -35,6 +36,7 @@ final class HomeViewModelFactory: IHomeViewModelFactory {
     
     func makeViewModel(
         selectedTab: HomeTab,
+        userEmail: String?,
         myEvents: [EventListItem],
         findEvents: [EventListItem],
         isLoading: Bool
@@ -60,10 +62,14 @@ final class HomeViewModelFactory: IHomeViewModelFactory {
             }
         }
         
+        let email = userEmail?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let username = email?.isEmpty == false ? email! : "Пользователь"
+        let avatarText = String(username.prefix(1)).uppercased()
+        
         return HomeViewModel(
             header: HomeHeaderViewModel(
-                avatarText: "U",
-                username: "username",
+                avatarText: avatarText,
+                username: username,
                 logoutTitle: "Выйти"
             ),
             tabs: tabs,
@@ -113,7 +119,7 @@ final class HomeViewModelFactory: IHomeViewModelFactory {
             return EventSectionViewModel(
                 title: section.title,
                 count: items.count,
-                items: items.map { makeCardViewModel(from: $0) }
+                items: items.map { makeCardViewModel(from: $0, tab: tab) }
             )
         }
         return EventListViewModel(
@@ -133,11 +139,13 @@ final class HomeViewModelFactory: IHomeViewModelFactory {
         
         for event in events {
             let eventDay = calendar.startOfDay(for: event.dateTime)
-            if eventDay >= startOfToday && eventDay < startOfTomorrow {
+            if eventDay < startOfToday {
+                result[.past, default: []].append(event)
+            } else if eventDay < startOfTomorrow {
                 result[.today, default: []].append(event)
-            } else if eventDay >= startOfTomorrow && eventDay < startOfDayAfterTomorrow {
+            } else if eventDay < startOfDayAfterTomorrow {
                 result[.tomorrow, default: []].append(event)
-            } else if eventDay >= startOfDayAfterTomorrow {
+            } else {
                 result[.later, default: []].append(event)
             }
         }
@@ -145,22 +153,23 @@ final class HomeViewModelFactory: IHomeViewModelFactory {
         return result
     }
     
-    private func makeCardViewModel(from item: EventListItem) -> EventCardViewModel {
+    private func makeCardViewModel(from item: EventListItem, tab: HomeTab) -> EventCardViewModel {
         let dateText = dayFormatter.string(from: item.dateTime)
+        let isSelectable = !(tab == .findEvents && item.dateTime < Date() && item.role == .nobody)
         
         let priceText: String
         let priceColor: UIColor
-        if item.price == "0" || item.price.isEmpty {
+        if isFreePrice(item.price) {
             priceText = "Бесплатно"
             priceColor = .systemBlue
         } else {
-            priceText = "\(item.price) \u{20BD}"
+            priceText = "\(item.price) \(currencySymbol(for: item.currency))"
             priceColor = .systemBlue
         }
         
         let badge: EventRoleBadgeViewModel?
         switch item.role {
-        case .admin:
+        case .host:
             badge = EventRoleBadgeViewModel(
                 text: "Вы – организатор",
                 backgroundColor: UIColor.systemBlue.withAlphaComponent(0.15),
@@ -179,12 +188,32 @@ final class HomeViewModelFactory: IHomeViewModelFactory {
         return EventCardViewModel(
             id: item.id,
             dateTimeText: dateText,
-            subtitle: item.subtitle,
+            subtitle: item.title,
             address: item.address,
             priceText: priceText,
             priceColor: priceColor,
-            participantCountText: "\(item.participantCount)",
-            roleBadge: badge
+            participantCountText: "\(item.participantsCount)/\(item.maxParticipantsCount)",
+            roleBadge: badge,
+            isSelectable: isSelectable
         )
+    }
+    
+    private func currencySymbol(for code: String) -> String {
+        switch code.uppercased() {
+        case "RUB": return "\u{20BD}"
+        case "USD": return "$"
+        case "EUR": return "\u{20AC}"
+        default: return code
+        }
+    }
+    
+    private func isFreePrice(_ price: String) -> Bool {
+        let trimmed = price.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty { return true }
+        if trimmed == "0" { return true }
+        if let value = Double(trimmed.replacingOccurrences(of: ",", with: ".")) {
+            return value == 0
+        }
+        return false
     }
 }

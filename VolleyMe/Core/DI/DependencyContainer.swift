@@ -13,6 +13,7 @@ protocol IDependencyContainer {
     var requestProcessor: IRequestProcessor { get }
     var keychainService: IKeychainService { get }
     var tokenStorage: ITokenStorage { get }
+    var logoutService: ILogoutService { get }
 }
 
 // MARK: - Implementation
@@ -24,6 +25,7 @@ final class DependencyContainer: IDependencyContainer {
     let requestProcessor: IRequestProcessor
     let keychainService: IKeychainService
     let tokenStorage: ITokenStorage
+    let logoutService: ILogoutService
     
     // MARK: - Init
     
@@ -32,13 +34,17 @@ final class DependencyContainer: IDependencyContainer {
         self.keychainService = keychain
         self.tokenStorage = TokenStorage(keychainService: keychain)
         
+        let processor: IRequestProcessor
         #if DEBUG
-        let mockProcessor = MockRequestProcessor()
-        mockProcessor.userRole = .participant
-        self.requestProcessor = mockProcessor
+        processor = RequestProcessor(
+            baseURL: "https://volleyme.ru",
+            tokenStorage: self.tokenStorage
+        )
         #else
-        self.requestProcessor = RequestProcessor()
+        processor = RequestProcessor(tokenStorage: self.tokenStorage)
         #endif
+        self.requestProcessor = processor
+        self.logoutService = LogoutService(requestProcessor: processor)
     }
 }
 

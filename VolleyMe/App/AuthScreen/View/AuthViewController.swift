@@ -53,14 +53,15 @@ final class AuthViewController: UIViewController {
         return label
     }()
     
-    private lazy var nicknameField: AuthTextField = {
+    private lazy var emailField: AuthTextField = {
         let field = AuthTextField()
         field.placeholder = "Никнейм"
         field.autocapitalizationType = .none
         field.autocorrectionType = .no
+        field.keyboardType = .default
         field.returnKeyType = .next
         field.delegate = self
-        field.addTarget(self, action: #selector(nicknameChanged), for: .editingChanged)
+        field.addTarget(self, action: #selector(emailChanged), for: .editingChanged)
         return field
     }()
     
@@ -181,7 +182,7 @@ final class AuthViewController: UIViewController {
         formContainerView.addSubview(titleLabel)
         formContainerView.addSubview(errorBannerView)
         errorBannerView.addSubview(errorBannerLabel)
-        formContainerView.addSubview(nicknameField)
+        formContainerView.addSubview(emailField)
         formContainerView.addSubview(passwordField)
         formContainerView.addSubview(loginButton)
         loginButton.addSubview(loadingIndicator)
@@ -213,14 +214,14 @@ final class AuthViewController: UIViewController {
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16))
         }
         
-        nicknameField.snp.makeConstraints { make in
+        emailField.snp.makeConstraints { make in
             make.top.equalTo(errorBannerView.snp.bottom).offset(Constants.fieldSpacing)
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalPadding)
             make.height.equalTo(Constants.fieldHeight)
         }
         
         passwordField.snp.makeConstraints { make in
-            make.top.equalTo(nicknameField.snp.bottom).offset(Constants.fieldSpacing)
+            make.top.equalTo(emailField.snp.bottom).offset(Constants.fieldSpacing)
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalPadding)
             make.height.equalTo(Constants.fieldHeight)
         }
@@ -277,6 +278,7 @@ final class AuthViewController: UIViewController {
     private func setupKeyboardDismiss() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
+        tap.delegate = self
         view.addGestureRecognizer(tap)
     }
     
@@ -307,8 +309,8 @@ final class AuthViewController: UIViewController {
     
     // MARK: - Actions
     
-    @objc private func nicknameChanged() {
-        presenter.didUpdateNickname(nicknameField.text ?? "")
+    @objc private func emailChanged() {
+        presenter.didUpdateEmail(emailField.text ?? "")
     }
     
     @objc private func passwordChanged() {
@@ -401,8 +403,8 @@ extension AuthViewController: IAuthView {
     func configure(with viewModel: AuthViewModel) {
         titleLabel.text = viewModel.title
         
-        nicknameField.updateState(hasError: viewModel.nicknameField.hasError)
-        nicknameField.isEnabled = viewModel.nicknameField.isEnabled
+        emailField.updateState(hasError: viewModel.emailField.hasError)
+        emailField.isEnabled = viewModel.emailField.isEnabled
         
         passwordField.updateState(hasError: viewModel.passwordField.hasError)
         passwordField.isEnabled = viewModel.passwordField.isEnabled
@@ -422,6 +424,9 @@ extension AuthViewController: IAuthView {
         if let error = viewModel.errorMessage {
             errorBannerLabel.text = error
             errorBannerView.isHidden = false
+        } else if let hint = viewModel.validationMessage {
+            errorBannerLabel.text = hint
+            errorBannerView.isHidden = false
         } else {
             errorBannerView.isHidden = true
         }
@@ -432,12 +437,20 @@ extension AuthViewController: IAuthView {
     }
 }
 
+// MARK: - UIGestureRecognizerDelegate
+
+extension AuthViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return !(touch.view is UIControl)
+    }
+}
+
 // MARK: - UITextFieldDelegate
 
 extension AuthViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == nicknameField {
+        if textField == emailField {
             passwordField.becomeFirstResponder()
         } else {
             textField.resignFirstResponder()

@@ -14,9 +14,8 @@ final class OnboardingViewController: UIViewController {
     
     private enum Constants {
         static let horizontalPadding: CGFloat = 32
+        static let illustrationHorizontalPadding: CGFloat = 24
         static let buttonHeight: CGFloat = 52
-        static let phoneAspectRatio: CGFloat = 1.85
-        static let phoneWidth: CGFloat = 160
         static let dotSize: CGFloat = 8
         static let dotSpacing: CGFloat = 10
         static let animationDuration: TimeInterval = 0.4
@@ -63,19 +62,22 @@ final class OnboardingViewController: UIViewController {
     
     private let phoneFrameView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray6
-        view.layer.cornerRadius = 18
-        view.layer.borderWidth = 4
-        view.layer.borderColor = UIColor.systemGray3.cgColor
+        view.backgroundColor = .clear
         view.clipsToBounds = true
         return view
     }()
     
     private let phonePlaceholderView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 14
         view.clipsToBounds = true
         return view
+    }()
+    
+    private let onboardingImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
     }()
     
     private let placeholderLabel: UILabel = {
@@ -157,6 +159,7 @@ final class OnboardingViewController: UIViewController {
         
         contentContainerView.addSubview(phoneFrameView)
         phoneFrameView.addSubview(phonePlaceholderView)
+        phonePlaceholderView.addSubview(onboardingImageView)
         phonePlaceholderView.addSubview(placeholderLabel)
         contentContainerView.addSubview(pageTitleLabel)
         contentContainerView.addSubview(pageSubtitleLabel)
@@ -186,12 +189,16 @@ final class OnboardingViewController: UIViewController {
         phoneFrameView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.centerX.equalToSuperview()
-            make.width.equalTo(Constants.phoneWidth)
-            make.height.equalTo(Constants.phoneWidth * Constants.phoneAspectRatio)
+            make.leading.trailing.equalToSuperview().inset(Constants.illustrationHorizontalPadding)
+            make.height.equalTo(phoneFrameView.snp.width)
         }
         
         phonePlaceholderView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(3)
+            make.edges.equalToSuperview()
+        }
+        
+        onboardingImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         placeholderLabel.snp.makeConstraints { make in
@@ -303,6 +310,8 @@ extension OnboardingViewController: IOnboardingView {
         pageSubtitleLabel.text = viewModel.subtitle
         actionButton.setTitle(viewModel.buttonTitle, for: .normal)
         phonePlaceholderView.backgroundColor = viewModel.placeholderColor
+        onboardingImageView.image = viewModel.image
+        placeholderLabel.isHidden = viewModel.image != nil
         placeholderLabel.text = viewModel.placeholderText
         backButton.isHidden = !viewModel.showBackButton
         

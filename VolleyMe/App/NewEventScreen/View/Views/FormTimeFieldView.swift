@@ -59,6 +59,7 @@ final class FormTimeFieldView: UIView {
         picker.locale = Locale(identifier: "ru_RU")
         picker.minuteInterval = 5
         picker.contentHorizontalAlignment = .leading
+        picker.tintColor = .label
         picker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
         return picker
     }()
@@ -91,7 +92,8 @@ final class FormTimeFieldView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        clearPickerBackground(timePicker)
+        timePicker.tintColor = .label
+        applyPlainCompactStyle(to: timePicker)
     }
     
     // MARK: - Setup
@@ -190,10 +192,22 @@ final class FormTimeFieldView: UIView {
     
     // MARK: - Helpers
     
-    private func clearPickerBackground(_ view: UIView) {
-        for subview in view.subviews {
-            subview.backgroundColor = .clear
-            clearPickerBackground(subview)
+    private func applyPlainCompactStyle(to view: UIView) {
+        view.backgroundColor = .clear
+        if let label = view as? UILabel {
+            label.textColor = .label
+            label.backgroundColor = .clear
         }
+        if #available(iOS 15.0, *) {
+            if let button = view as? UIButton {
+                button.tintColor = .label
+                if var config = button.configuration {
+                    config.background.backgroundColor = .clear
+                    config.baseForegroundColor = .label
+                    button.configuration = config
+                }
+            }
+        }
+        view.subviews.forEach { applyPlainCompactStyle(to: $0) }
     }
 }

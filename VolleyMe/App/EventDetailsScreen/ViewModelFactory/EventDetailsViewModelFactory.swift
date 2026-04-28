@@ -42,13 +42,9 @@ final class EventDetailsViewModelFactory: IEventDetailsViewModelFactory {
             description: createDescription(from: event.description, isExpanded: isDescriptionExpanded),
             participantsSection: createParticipantsSection(
                 participants: event.participants,
-                maxCount: event.maxParticipantCount,
-                currentUserId: event.currentUserId
+                maxCount: event.maxParticipantsCount
             ),
-            hostsSection: createHostsSection(
-                hosts: event.hosts,
-                currentUserId: event.currentUserId
-            ),
+            hostsSection: createHostsSection(hosts: event.hosts),
             actionButton: createPrimaryActionButton(for: event.userRole, isFull: event.isFull, isLoading: isLoading),
             secondaryActionButton: createSecondaryActionButton(for: event.userRole),
             userRole: event.userRole,
@@ -215,17 +211,15 @@ final class EventDetailsViewModelFactory: IEventDetailsViewModelFactory {
     
     private func createParticipantsSection(
         participants: [Participant],
-        maxCount: Int,
-        currentUserId: String
+        maxCount: Int
     ) -> ParticipantsSectionViewModel {
         let cellViewModels = participants.map { participant in
-            ParticipantCellViewModel(
+            let displayName = participant.name ?? "Участник"
+            return ParticipantCellViewModel(
                 id: participant.id,
-                avatarText: String(participant.name.prefix(1).uppercased()),
+                avatarText: String(displayName.prefix(1).uppercased()),
                 avatarUrl: participant.avatarUrl,
-                name: participant.name,
-                isCurrentUser: participant.isCurrentUser,
-                currentUserSuffix: participant.isCurrentUser ? Constants.currentUserSuffix : nil
+                name: displayName
             )
         }
         
@@ -236,18 +230,14 @@ final class EventDetailsViewModelFactory: IEventDetailsViewModelFactory {
         )
     }
     
-    private func createHostsSection(
-        hosts: [Participant],
-        currentUserId: String
-    ) -> ParticipantsSectionViewModel {
+    private func createHostsSection(hosts: [Participant]) -> ParticipantsSectionViewModel {
         let cellViewModels = hosts.map { host in
-            ParticipantCellViewModel(
+            let displayName = host.name ?? "Организатор"
+            return ParticipantCellViewModel(
                 id: host.id,
-                avatarText: String(host.name.prefix(1).uppercased()),
+                avatarText: String(displayName.prefix(1).uppercased()),
                 avatarUrl: host.avatarUrl,
-                name: host.name,
-                isCurrentUser: host.isCurrentUser,
-                currentUserSuffix: host.isCurrentUser ? Constants.currentUserSuffix : nil
+                name: displayName
             )
         }
         

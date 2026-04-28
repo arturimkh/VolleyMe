@@ -15,6 +15,7 @@ struct NewEventViewModel {
     let startTimeField: FormTimeFieldViewModel
     let endTimeField: FormTimeFieldViewModel
     let durationText: String
+    let cityField: FormTextFieldViewModel
     let addressField: FormTextFieldViewModel
     let participantCountField: FormStepperFieldViewModel
     let priceField: FormTextFieldViewModel

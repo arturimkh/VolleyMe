@@ -11,7 +11,7 @@ import Foundation
 
 protocol IAuthViewModelFactory {
     func makeViewModel(
-        nickname: String,
+        email: String,
         password: String,
         state: AuthState,
         validationErrors: [AuthValidationError]
@@ -23,7 +23,7 @@ protocol IAuthViewModelFactory {
 final class AuthViewModelFactory: IAuthViewModelFactory {
     
     func makeViewModel(
-        nickname: String,
+        email: String,
         password: String,
         state: AuthState,
         validationErrors: [AuthValidationError]
@@ -31,13 +31,15 @@ final class AuthViewModelFactory: IAuthViewModelFactory {
         let isLoading = state == .loading
         let isSuccess = state == .success
         
-        let hasNicknameError = validationErrors.contains(where: {
-            $0 == .nicknameEmpty || $0 == .nicknameTooShort
+        let hasEmailError = validationErrors.contains(where: {
+            $0 == .emailEmpty || $0 == .emailInvalid
         })
         let hasPasswordError = validationErrors.contains(where: {
-            $0 == .passwordEmpty || $0 == .passwordTooShort
+            $0 == .passwordEmpty || $0 == .passwordDoesNotMeetPolicy
         })
-        
+
+        let validationMessage: String? = Self.firstValidationMessage(for: validationErrors)
+
         let errorMessage: String?
         if case .error(let message) = state {
             errorMessage = message
@@ -45,15 +47,15 @@ final class AuthViewModelFactory: IAuthViewModelFactory {
             errorMessage = nil
         }
         
-        let hasInput = !nickname.isEmpty && !password.isEmpty
+        let hasInput = !email.isEmpty && !password.isEmpty
         
         return AuthViewModel(
             title: "Вход",
-            nicknameField: AuthFieldViewModel(
+            emailField: AuthFieldViewModel(
                 placeholder: "Никнейм",
-                text: nickname,
+                text: email,
                 isSecure: false,
-                hasError: hasNicknameError || errorMessage != nil,
+                hasError: hasEmailError || errorMessage != nil,
                 isEnabled: !isLoading && !isSuccess
             ),
             passwordField: AuthFieldViewModel(
@@ -69,11 +71,25 @@ final class AuthViewModelFactory: IAuthViewModelFactory {
                 isLoading: isLoading
             ),
             registerButtonTitle: "Создать аккаунт",
+            validationMessage: validationMessage,
             errorMessage: errorMessage,
             showSuccessState: isSuccess,
             successTitle: "Рады видеть вас снова!",
             successSubtitle: "Мы уже подготавливаем список ваших встреч."
         )
+    }
+}
+
+// MARK: - Validation message helper
+
+private extension AuthViewModelFactory {
+
+    static func firstValidationMessage(for errors: [AuthValidationError]) -> String? {
+        if errors.contains(.emailEmpty) { return "Введите никнейм." }
+        if errors.contains(.emailInvalid) { return PasswordPolicy.nicknameLatinHintRU }
+        if errors.contains(.passwordEmpty) { return "Введите пароль." }
+        if errors.contains(.passwordDoesNotMeetPolicy) { return PasswordPolicy.requirementHintRU }
+        return nil
     }
 }
 

@@ -13,7 +13,7 @@ final class EventDetailsViewController: UIViewController {
     // MARK: - Constants
     
     private enum Constants {
-        static let scrollBottomInset: CGFloat = 80
+        static let scrollBottomInset: CGFloat = 16
         static let sectionSpacing: CGFloat = 16
     }
     
@@ -117,9 +117,9 @@ final class EventDetailsViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
+        setupActionButton()
         setupScrollView()
         setupContentStack()
-        setupActionButton()
         setupLoadingIndicator()
     }
     
@@ -144,7 +144,8 @@ final class EventDetailsViewController: UIViewController {
         
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButtonView.snp.top)
         }
         
         contentStackView.snp.makeConstraints { make in

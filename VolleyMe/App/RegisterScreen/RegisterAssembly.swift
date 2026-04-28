@@ -40,6 +40,6 @@ final class RegisterAssembly: IRegisterAssembly {
         presenter.view = viewController
         presenter.output = output
         
-        return viewController
+        return UINavigationController(rootViewController: viewController)
     }
 }

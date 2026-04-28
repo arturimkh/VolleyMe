@@ -9,14 +9,18 @@ import Foundation
 
 // MARK: - API Request
 
+/// Matches OpenAPI `LoginRequest`. The backend authenticates by `username`,
+/// the iOS UI labels this field «Никнейм» — its value is sent as `username`.
 struct LoginRequest: Encodable {
-    let nickname: String
+    let username: String
     let password: String
 }
 
 // MARK: - API Response
 
+/// Matches OpenAPI `JWTAuthTokenResponse`.
 struct LoginResponse: Decodable {
+    let tokenType: String
     let accessToken: String
     let refreshToken: String
 }
@@ -24,10 +28,10 @@ struct LoginResponse: Decodable {
 // MARK: - Validation
 
 enum AuthValidationError {
-    case nicknameEmpty
-    case nicknameTooShort
+    case emailEmpty
+    case emailInvalid
     case passwordEmpty
-    case passwordTooShort
+    case passwordDoesNotMeetPolicy
 }
 
 struct AuthValidationResult {

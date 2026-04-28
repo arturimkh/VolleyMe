@@ -13,7 +13,7 @@ protocol IEventDetailsService {
     func fetchEventDetails(eventId: String) async throws -> EventDetails
     func joinEvent(eventId: String) async throws
     func leaveEvent(eventId: String) async throws
-    func cancelEvent(eventId: String) async throws
+    func deleteEvent(eventId: String) async throws
 }
 
 // MARK: - Implementation
@@ -33,22 +33,19 @@ final class EventDetailsService: IEventDetailsService {
     // MARK: - IEventDetailsService
     
     func fetchEventDetails(eventId: String) async throws -> EventDetails {
-        let response: EventDetailsResponse = try await requestProcessor.fetch("/event/\(eventId)")
+        let response: EventDetailsResponse = try await requestProcessor.fetch("/events/\(eventId)/")
         return response.toDomain()
     }
     
     func joinEvent(eventId: String) async throws {
-        try await requestProcessor.post("/event/join/\(eventId)", body: nil)
+        try await requestProcessor.post("/events/\(eventId)/join/", body: nil)
     }
     
     func leaveEvent(eventId: String) async throws {
-        try await requestProcessor.post("/event/leave/\(eventId)", body: nil)
+        try await requestProcessor.post("/events/\(eventId)/leave/", body: nil)
     }
     
-    func cancelEvent(eventId: String) async throws {
-        try await requestProcessor.post("/event/cancel/\(eventId)", body: nil)
+    func deleteEvent(eventId: String) async throws {
+        try await requestProcessor.delete("/events/\(eventId)/")
     }
 }
-
-
-

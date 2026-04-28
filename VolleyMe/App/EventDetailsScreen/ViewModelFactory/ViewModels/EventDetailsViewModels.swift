@@ -70,8 +70,6 @@ struct ParticipantCellViewModel {
     let avatarText: String
     let avatarUrl: String?
     let name: String
-    let isCurrentUser: Bool
-    let currentUserSuffix: String?
 }
 
 // MARK: - Action Button

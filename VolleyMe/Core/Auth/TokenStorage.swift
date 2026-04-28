@@ -12,6 +12,33 @@ import Foundation
 struct AuthTokens: Codable {
     let accessToken: String
     let refreshToken: String
+    let userEmail: String?
+    
+    var displayEmail: String? {
+        userEmail ?? jwtStringClaim(named: "email") ?? jwtStringClaim(named: "username")
+    }
+    
+    private func jwtStringClaim(named key: String) -> String? {
+        let segments = accessToken.split(separator: ".")
+        guard segments.count > 1 else { return nil }
+        
+        var payload = String(segments[1])
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let padding = payload.count % 4
+        if padding > 0 {
+            payload += String(repeating: "=", count: 4 - padding)
+        }
+        
+        guard let data = Data(base64Encoded: payload),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let value = json[key] as? String,
+              value.contains("@")
+        else {
+            return nil
+        }
+        return value
+    }
 }
 
 // MARK: - Protocol

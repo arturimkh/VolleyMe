@@ -12,6 +12,7 @@ import Foundation
 protocol IHomeView: AnyObject {
     func configure(with viewModel: HomeViewModel)
     func showLogoutAlert()
+    func showError(_ message: String)
 }
 
 // MARK: - Output Protocol
@@ -27,6 +28,7 @@ protocol IHomeOutput: AnyObject {
 
 protocol IHomePresenter {
     func viewDidLoad()
+    func viewWillAppear()
     func didSelectTab(_ tab: HomeTab)
     func didTapEvent(id: String)
     func didTapCreateEvent()
@@ -47,14 +49,16 @@ final class HomePresenter {
     
     private let service: IHomeService
     private let tokenStorage: ITokenStorage
+    private let logoutService: ILogoutService
     private let viewModelFactory: IHomeViewModelFactory
     
     private var selectedTab: HomeTab = .myEvents
     private var allEvents: [EventListItem] = []
     private var isLoading = false
+    private var isFirstAppear = true
     
     private var myEvents: [EventListItem] {
-        allEvents.filter { $0.role == .admin || $0.role == .participant }
+        allEvents.filter { $0.role == .host || $0.role == .participant }
     }
     
     private var findEvents: [EventListItem] {
@@ -63,9 +67,15 @@ final class HomePresenter {
     
     // MARK: - Init
     
-    init(service: IHomeService, tokenStorage: ITokenStorage, viewModelFactory: IHomeViewModelFactory) {
+    init(
+        service: IHomeService,
+        tokenStorage: ITokenStorage,
+        logoutService: ILogoutService,
+        viewModelFactory: IHomeViewModelFactory
+    ) {
         self.service = service
         self.tokenStorage = tokenStorage
+        self.logoutService = logoutService
         self.viewModelFactory = viewModelFactory
     }
     
@@ -77,9 +87,13 @@ final class HomePresenter {
         
         Task { @MainActor in
             do {
-                self.allEvents = try await service.fetchEvents()
+                self.allEvents = try await service.fetchEvents(onlyMine: false)
             } catch {
                 self.allEvents = []
+                self.isLoading = false
+                self.updateView()
+                self.view?.showError(error.localizedDescription)
+                return
             }
             
             self.isLoading = false
@@ -90,6 +104,7 @@ final class HomePresenter {
     private func updateView() {
         let viewModel = viewModelFactory.makeViewModel(
             selectedTab: selectedTab,
+            userEmail: tokenStorage.tokens?.displayEmail,
             myEvents: myEvents,
             findEvents: findEvents,
             isLoading: isLoading
@@ -103,6 +118,14 @@ final class HomePresenter {
 extension HomePresenter: IHomePresenter {
     
     func viewDidLoad() {
+        loadData()
+    }
+    
+    func viewWillAppear() {
+        if isFirstAppear {
+            isFirstAppear = false
+            return
+        }
         loadData()
     }
     
@@ -130,8 +153,14 @@ extension HomePresenter: IHomePresenter {
     }
     
     func didConfirmLogout() {
-        tokenStorage.clear()
-        output?.homeDidTapLogout()
+        Task { @MainActor in
+            // Best-effort: notify the backend so the refresh token is invalidated.
+            // Local cleanup must run regardless of network/server failures so the
+            // user always lands on the auth screen after confirming logout.
+            try? await logoutService.logout()
+            tokenStorage.clear()
+            output?.homeDidTapLogout()
+        }
     }
     
     func didPullToRefresh() {

@@ -93,6 +93,7 @@ final class HomeHeaderView: UIView {
         usernameLabel.snp.makeConstraints { make in
             make.leading.equalTo(avatarView.snp.trailing).offset(10)
             make.centerY.equalToSuperview()
+            make.trailing.lessThanOrEqualTo(logoutButton.snp.leading).offset(-12)
         }
         
         logoutButton.snp.makeConstraints { make in

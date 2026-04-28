@@ -36,6 +36,7 @@ final class OnboardingViewModelFactory: IOnboardingViewModelFactory {
             title: page.title,
             subtitle: page.subtitle,
             buttonTitle: page.isLastPage ? "Перейти ко входу" : "Далее",
+            image: UIImage(named: "Onboarding\(page.placeholderIndex)"),
             placeholderText: "Скриншот \(page.placeholderIndex)",
             placeholderColor: placeholderColors[colorIndex],
             showBackButton: currentIndex > 0,
