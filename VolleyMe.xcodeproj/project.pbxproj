@@ -50,10 +50,7 @@
 		182CCB742EFEFBD900C451D5 /* FormStepperFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB752EFEFBD900C451D5 /* FormStepperFieldView.swift */; };
 		182CCB762EFEFBD900C451D5 /* FormSubmitButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182CCB772EFEFBD900C451D5 /* FormSubmitButtonView.swift */; };
 		18EAC5D62F2D7B2F00B7D56F /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 18EAC5D52F2D7B2F00B7D56F /* SnapKit */; };
-		18EAC5D82F2D7B2F00B7D56F /* SnapKit-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 18EAC5D72F2D7B2F00B7D56F /* SnapKit-Dynamic */; };
 		296B9804F7785CFB9E63ED05 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8954254DB037581D0FBD2E /* KeychainService.swift */; };
-		C0A1F2E3D4B5A6978890ABCE /* PasswordPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1F2E3D4B5A6978890ABCD /* PasswordPolicy.swift */; };
-		B7E1F2A3C4D5061829304151 /* LogoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E1F2A3C4D5061829304150 /* LogoutService.swift */; };
 		2C9949F4AFF452EC8A1447E8 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013D48BE88243637C00CB478 /* EmptyStateView.swift */; };
 		37B2B5D5D0D02CFB0CBCD594 /* RegisterViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C10233F4B6D16C48CC9B /* RegisterViewModels.swift */; };
 		3A21765E8D8CBB5F10B1517B /* OnboardingViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51EEFF51698E0AF6B7FED3A /* OnboardingViewModelFactory.swift */; };
@@ -66,7 +63,6 @@
 		705943B239C1B6FDABF746E2 /* AuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257536F8DB432DE5DB95F19B /* AuthModel.swift */; };
 		72F94A82AEA66A2B66079466 /* HomeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE84D2885C949E1ACC6D435 /* HomeViewModelFactory.swift */; };
 		732F4BF282A526B20BB2B36E /* EventCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50C419F8240B6354EEB8E05 /* EventCardCell.swift */; };
-		A1B2C3D4E5F60718A9B0C1D2 /* CreateEventButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E4F5A6B7C80921E2F3A4B5 /* CreateEventButtonCell.swift */; };
 		784F44419FED32119935EDBC /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7E4435A176744C31068E66 /* SectionHeaderView.swift */; };
 		7FBAED3871B39FCD08198E0B /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808B1422021CE0B951211016 /* RegisterViewController.swift */; };
 		8423264E7D3616EC743C59B2 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40A1D5BE983FE026A6DE86C /* AuthService.swift */; };
@@ -77,12 +73,15 @@
 		97464A9CB736B942E0ACE5F6 /* HomePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F74B9CB7B76CBB97CA069F /* HomePresenter.swift */; };
 		9FDC9D7009965307D1AE3753 /* OnboardingAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE014A2A624E86BB473854DC /* OnboardingAssembly.swift */; };
 		A1A34F1B87957724F7802EFA /* CreateEventButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978A40D4AF02BAEFBC51A6D6 /* CreateEventButton.swift */; };
+		A1B2C3D4E5F60718A9B0C1D2 /* CreateEventButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E4F5A6B7C80921E2F3A4B5 /* CreateEventButtonCell.swift */; };
 		A61A4D208F83DB890E8E83D2 /* RegisterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D84889CEB1BB9C3EC55AEFA2 /* RegisterModel.swift */; };
 		AA11BB22CC33DD44EE55FF66 /* LogoutAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66EE55DD44CC33BB22AA11 /* LogoutAlertViewController.swift */; };
 		B73B4D07AB841D4D62508DBE /* HomeViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF846FF9E9866E4E31D2457 /* HomeViewModels.swift */; };
+		B7E1F2A3C4D5061829304151 /* LogoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E1F2A3C4D5061829304150 /* LogoutService.swift */; };
 		BA3567A2C913F4640A9A7820 /* RegisterViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BFC9232760DD873ADCAA5 /* RegisterViewModelFactory.swift */; };
 		BC843A313E2A7A037FF5B4CD /* AuthViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5CB99E49BAC8C1FA55D5427 /* AuthViewModels.swift */; };
 		BCC7EF51295947868CB40F63 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17A7602B6E6B273934A3CF6 /* AuthViewController.swift */; };
+		C0A1F2E3D4B5A6978890ABCE /* PasswordPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1F2E3D4B5A6978890ABCD /* PasswordPolicy.swift */; };
 		C4515E988104DF93BADE2090 /* OnboardingViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56557109BC5D00C75E777188 /* OnboardingViewModels.swift */; };
 		E999FD00CA10B9ED57FD6780 /* RegisterAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E16933044C39330212777E /* RegisterAssembly.swift */; };
 		EA6767A38F4E3A9814642C13 /* RegisterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 955B63B3B69273ABA6F58F35 /* RegisterService.swift */; };
@@ -138,8 +137,6 @@
 		249531BEF998041D64E4D91A /* OnboardingPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPresenter.swift; sourceTree = "<group>"; };
 		257536F8DB432DE5DB95F19B /* AuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModel.swift; sourceTree = "<group>"; };
 		260395BAE29FBB2DA68D428D /* TokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStorage.swift; sourceTree = "<group>"; };
-		C0A1F2E3D4B5A6978890ABCD /* PasswordPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordPolicy.swift; sourceTree = "<group>"; };
-		B7E1F2A3C4D5061829304150 /* LogoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutService.swift; sourceTree = "<group>"; };
 		42E16933044C39330212777E /* RegisterAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterAssembly.swift; sourceTree = "<group>"; };
 		547E4146951C538A763CB2AE /* HomeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeModel.swift; sourceTree = "<group>"; };
 		56557109BC5D00C75E777188 /* OnboardingViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModels.swift; sourceTree = "<group>"; };
@@ -158,9 +155,11 @@
 		A659A3B6CC566A04E6E5078F /* AuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModelFactory.swift; sourceTree = "<group>"; };
 		AAF846FF9E9866E4E31D2457 /* HomeViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModels.swift; sourceTree = "<group>"; };
 		B50C419F8240B6354EEB8E05 /* EventCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCardCell.swift; sourceTree = "<group>"; };
-		D3E4F5A6B7C80921E2F3A4B5 /* CreateEventButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateEventButtonCell.swift; sourceTree = "<group>"; };
+		B7E1F2A3C4D5061829304150 /* LogoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutService.swift; sourceTree = "<group>"; };
 		BE47BAE5EFFD779544F7433E /* RegisterPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterPresenter.swift; sourceTree = "<group>"; };
+		C0A1F2E3D4B5A6978890ABCD /* PasswordPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordPolicy.swift; sourceTree = "<group>"; };
 		CC7E4435A176744C31068E66 /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
+		D3E4F5A6B7C80921E2F3A4B5 /* CreateEventButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateEventButtonCell.swift; sourceTree = "<group>"; };
 		D44BFC9232760DD873ADCAA5 /* RegisterViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModelFactory.swift; sourceTree = "<group>"; };
 		D51EEFF51698E0AF6B7FED3A /* OnboardingViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModelFactory.swift; sourceTree = "<group>"; };
 		D555C10233F4B6D16C48CC9B /* RegisterViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModels.swift; sourceTree = "<group>"; };
@@ -180,7 +179,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				18EAC5D62F2D7B2F00B7D56F /* SnapKit in Frameworks */,
-				18EAC5D82F2D7B2F00B7D56F /* SnapKit-Dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -796,7 +794,6 @@
 			name = VolleyMe;
 			packageProductDependencies = (
 				18EAC5D52F2D7B2F00B7D56F /* SnapKit */,
-				18EAC5D72F2D7B2F00B7D56F /* SnapKit-Dynamic */,
 			);
 			productName = VolleyMe;
 			productReference = 182CCAED2EFEFBD800C451D5 /* VolleyMe.app */;
@@ -1078,6 +1075,8 @@
 				DEVELOPMENT_TEAM = R82UJBY7FF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VolleyMe/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VolleyMe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1087,7 +1086,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ArturDev.VolleyMe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.imanbaev.volleyme;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1105,6 +1104,8 @@
 				DEVELOPMENT_TEAM = R82UJBY7FF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VolleyMe/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = VolleyMe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1114,7 +1115,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ArturDev.VolleyMe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.imanbaev.volleyme;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1161,11 +1162,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 18EAC5D42F2D7B2F00B7D56F /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
-		};
-		18EAC5D72F2D7B2F00B7D56F /* SnapKit-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 18EAC5D42F2D7B2F00B7D56F /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = "SnapKit-Dynamic";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
